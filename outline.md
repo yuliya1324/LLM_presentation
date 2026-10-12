@@ -7,7 +7,7 @@ Talk: 20 min, about 22 slides
 | File | Owner | Slides | Covers |
 |---|---|---|---|
 | sections/00-title.html | Iuliia | 1 | Title |
-| sections/01-motivation.html | Iuliia | 4 | Problem, why it matters, gap in prior work |
+| sections/01-motivation.html | Iuliia | 2 | Problem, why it matters, what authors propose |
 | sections/02-method.html | Yash | 5 | Method, key idea, architecture |
 | sections/03-results.html | Elgun | 6 | Setup, main results, ablations, user study, takeaways |
 | sections/04-ablations.html | Yash | 5 | Our own analysis and ablations targeting paper's limitations |
@@ -22,10 +22,14 @@ Layout and source in brackets are only suggestions. Facts are in `sources/notes/
 - title-1: Title from the paper + Presented by Iuliia Korotkova, Yash Bhardwaj, Elgun Hasanov
 
 ### 01-motivation (Iuliia)
-- motivation-1: 
+- motivation-1: Split the slide in two parts. In one part show an example of a chat where the user needs to iteratively change the output of the LLM and is unsatisfied with the tone, examples, and the LLM goes back and forth. In another part an example that shows over-enginnered prompt where the user had to describe every detail to get the right answer, and the user still needs to twick a bit the result. Then remove the right part and substitute it with CollabLLM interaction where LLM interactively asks for refinement before giving the final answer. You can use an example from Figure 2, p. 2. Make the dialogues with animations: one message appears after another. The title: Do you also chat with LLMs like this? (or formulate a question in a better way to make it teasing)
+- motivation-2: why this happens and how CollabLLM fixes this. This happens because of a single turn RLHF. CollabLLM propose a multi-turn reward. Use the graph from figure 2 to illustrate the difference in training techniques.
 
 ### 02-method (Yash)
 - method-1: 
 
 ### 03-results (Elgun)
 - results-1: 
+
+### 05-harness (Iuliia)
+- harness-1: Describe how your harness works to make these slides. Show the structure of the repo, rules and the workflow: fetch resources -> write a plan -> draft slides -> iterate on them. Keep it minimal, don't make the slide overflow. Connect parts to each other.

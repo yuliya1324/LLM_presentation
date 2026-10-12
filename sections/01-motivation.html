@@ -1,4 +1,83 @@
 <section id="motivation-1">
-  <h2>Placeholder</h2>
-  <p>Run <code>/draft 01-motivation</code> to fill this section.</p>
+  <h2>Do you also chat with LLMs like this?</h2>
+  <div class="versus">
+    <div class="chat">
+      <span class="chat-head">Fix it afterwards</span>
+      <div class="msg user fragment" data-fragment-index="0">I need to write about how optimism can improve our well-being</div>
+      <div class="msg ai fragment" data-fragment-index="1">Here's a piece for you: The Power of Optimism&hellip; <span class="dim">(many tokens)</span></div>
+      <div class="msg user fragment" data-fragment-index="2">The tone is too formal and examples are too old-school.</div>
+      <div class="msg ai fragment" data-fragment-index="3">The Optimism Revolution: Unleashing Your Inner Power&hellip; <span class="dim">(many back-and-forth turns)</span></div>
+      <div class="verdict bad fragment" data-fragment-index="12">&#9785;&#xFE0E; Frustrating</div>
+      <div class="verdict bad fragment" data-fragment-index="12">&#9998;&#xFE0E; Low quality (BLEU 0.32)</div>
+      <div class="verdict bad fragment" data-fragment-index="12">&#9201;&#xFE0E; Low efficiency (1.39k tokens read)</div>
+      <div class="verdict bad fragment" data-fragment-index="12">&#8644; Low interactivity (LLM judge 0.2)</div>
+    </div>
+    <div class="r-stack">
+      <div class="chat fragment fade-out" data-fragment-index="8">
+        <span class="chat-head">Specify everything upfront</span>
+        <div class="msg user fragment" data-fragment-index="4">Write 400 words on optimism and well-being. Inspiring, not formal. Focus on resilience and relationships. Modern examples, one anecdote, short paragraphs&hellip;</div>
+        <div class="msg ai fragment" data-fragment-index="5">Here's your post: Optimism, Your Everyday Superpower&hellip;</div>
+        <div class="msg user fragment" data-fragment-index="6">Close, but the anecdote feels cheesy.</div>
+        <div class="msg ai fragment" data-fragment-index="7">Sure, here is a revised version&hellip;</div>
+        <div class="verdict good fragment" data-fragment-index="12">&#9786;&#xFE0E; Very helpful &amp; efficient</div>
+        <div class="verdict good fragment" data-fragment-index="12">&#9998;&#xFE0E; High quality (BLEU 0.46)</div>
+        <div class="verdict good fragment" data-fragment-index="12">&#9201;&#xFE0E; High efficiency (1.39k tokens read)</div>
+        <div class="verdict good fragment" data-fragment-index="12">&#8644; High interactivity (LLM judge 0.8)</div>
+      </div>
+      <div class="chat">
+        <span class="chat-head ours fragment" data-fragment-index="8">CollabLLM</span>
+        <div class="msg user fragment" data-fragment-index="8">I need to write about how optimism can improve our well-being</div>
+        <div class="msg ai fragment" data-fragment-index="9">What kind of tone are you aiming for? A. Uplifting B. Inspiring C. Heartfelt. Resilience or relationships?</div>
+        <div class="msg user fragment" data-fragment-index="10">(B). Resilience and relationships would be great!</div>
+        <div class="msg ai fragment" data-fragment-index="11">Here's an opening paragraph to set the tone&hellip; Perhaps add anecdotes?</div>
+        <div class="verdict good fragment" data-fragment-index="12">&#9786;&#xFE0E; Very helpful &amp; efficient</div>
+      <div class="verdict good fragment" data-fragment-index="12">&#9998;&#xFE0E; High quality (BLEU 0.46)</div>
+      <div class="verdict good fragment" data-fragment-index="12">&#9201;&#xFE0E; High efficiency (1.39k tokens read)</div>
+      <div class="verdict good fragment" data-fragment-index="12">&#8644; High interactivity (LLM judge 0.8)</div>
+      </div>
+    </div>
+  </div>
+  <p class="source">Fig. 2, p. 2 (messages shortened); &ldquo;Specify everything upfront&rdquo; is our illustration</p>
+  <aside class="notes">
+    Let's start with something you have probably done. On the left, I ask for a piece on how
+    optimism improves well-being. The model doesn't ask anything. It writes a long text, the
+    tone is wrong, I correct it, it writes another long text, and we go back and forth. This
+    example comes from Figure 2 of the paper.
+    On the right is the other strategy: I write a mini-specification up front, with length,
+    tone, focus, examples and structure. Then I still have to tweak the result, and we go round again. This one is
+    our own illustration, not from the paper.
+    Click: now replace that strategy with CollabLLM. Same vague request, but the model asks
+    first: what tone, and which angle, resilience or relationships? The user answers in one
+    line, and the model proposes an opening paragraph and suggests adding anecdotes.
+    Click: the paper's evaluation of this example. On the left the user is frustrated, quality
+    is low at BLEU 0.32 and an LLM judge rates interactivity 0.2. On the right the user finds it
+    helpful and efficient, BLEU is 0.46 and interactivity is 0.8. Note that the figure prints
+    the same 1.39k tokens read for both sides.
+    So why don't today's models do this by default?
+  </aside>
+</section>
+
+<section id="motivation-2">
+  <h2>Why does this happen, and how do the authors fix it?</h2>
+  <figure class="fragment">
+      <img src="assets/figures/fig2a-training.png" alt="Standard training: each response gets a next-turn reward from a preference dataset">
+      <figcaption>RLHF: each reply is rated on its own</figcaption>
+  </figure>
+  <figure class="fragment">
+      <img src="assets/figures/fig2b-training.png" alt="CollabLLM training: the current model turn is rewarded by simulating future turns">
+      <figcaption>CollabLLM: each reply is rated by the turns it leads to</figcaption>
+  </figure>
+  <p class="source">Fig. 2 (training panels), p. 2; Sec. 1 &amp; 3, p. 1&ndash;3</p>
+  <aside class="notes">
+    The reason is how models are trained. Click: here is standard RLHF: we take a context x and
+    a response y, rate the response at the next turn with thumbs up or down, and train the
+    policy on these single-turn rewards. Under that signal, a clarifying question looks worse
+    than a full answer, because it doesn't give the user anything yet.
+    The paper's point is that summing good single-turn rewards does not guarantee a good
+    conversation overall.
+    Click: CollabLLM changes the reward. It takes the current model turn, simulates the future
+    turns with a user simulator, and scores the response by where the conversation ends up.
+    This is called the Multiturn-aware Reward, and the model is fine-tuned on it with RL.
+    Yash will now show how this reward is defined and computed.
+  </aside>
 </section>
