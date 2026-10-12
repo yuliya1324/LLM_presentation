@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="reveal"><div class="slides">
+{{SECTIONS}}
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/math/math.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+<script src="slides.js"></script>
+<script>
+Reveal.initialize({
+  width: 1280, height: 720, margin: 0.04,
+  center: false, hash: true, slideNumber: "c/t",
+  transition: "fade", transitionSpeed: "fast", backgroundTransition: "fade",
+  autoAnimateDuration: 0.8,
+  plugins: [RevealNotes, RevealMath.KaTeX]
+});
+</script>
+</body>
+</html>

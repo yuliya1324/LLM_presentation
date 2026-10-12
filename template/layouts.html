@@ -1,0 +1,244 @@
+<!--
+  The allowed slide layouts, shown with real CollabLLM content.
+  Build it as a demo deck with:  python build.py --demo
+  Copy a layout, keep its classes, change the content.
+
+  Every slide: unique id prefixed with its section, speaker notes in <aside class="notes">.
+  Background: add class "band" to a section for the light grey background (section openers).
+  Animation, in order of preference:
+    - class="fragment" on an element: it appears on the next click (add "fade-up" to rise in)
+    - charts and .count numbers animate by themselves when the slide appears
+    - data-auto-animate on two consecutive slides: elements with the same data-id morph
+  Math: $inline$ and $$display$$ (KaTeX).
+-->
+
+<!-- TITLE -->
+<section id="title" class="title-slide">
+  <h1>CollabLLM: From Passive Responders to Active Collaborators</h1>
+  <p class="authors">Shirley Wu<sup>1</sup>, Michel Galley<sup>2</sup>, Baolin Peng<sup>2</sup>, Hao Cheng<sup>2</sup>, Gavin Li<sup>1</sup>, Yao Dou<sup>3</sup>, Weixin Cai<sup>1</sup>, James Zou<sup>1</sup>, Jure Leskovec<sup>1</sup>, Jianfeng Gao<sup>2</sup></p>
+  <p class="affil"><sup>1</sup>Stanford University, <sup>2</sup>Microsoft, <sup>3</sup>Georgia Tech</p>
+  <p class="award">ICML 2025 Outstanding Paper</p>
+  <p class="presenters">Presented by A, B and C</p>
+  <aside class="notes">Opening line.</aside>
+</section>
+
+<!-- STATEMENT: section opener; the .hl line is orange, like the project page -->
+<section id="intro-1" class="statement band">
+  <h2>Make your LLMs <span class="hl">active collaborators</span></h2>
+  <p class="lead">A fine-tuning framework that trains LLMs for effective, efficient multiturn collaboration with users.</p>
+  <aside class="notes">What to say.</aside>
+</section>
+
+<!-- CARDS: three short explanations; icon is one character -->
+<section id="intro-2">
+  <h2>Single-turn rewards teach models to answer, not to collaborate</h2>
+  <div class="cards">
+    <div class="card fragment fade-up">
+      <span class="icon">?</span>
+      <h3>What is missing</h3>
+      <p>Faced with ambiguous requests, LLMs respond passively instead of helping users work out what they need.</p>
+    </div>
+    <div class="card fragment fade-up">
+      <span class="icon">1</span>
+      <h3>Why it happens</h3>
+      <p>RLHF rewards each response in isolation, so asking a clarifying question looks worse than answering.</p>
+    </div>
+    <div class="card fragment fade-up">
+      <span class="icon">&#8734;</span>
+      <h3>The fix</h3>
+      <p>Reward a response by its long-term effect on the whole conversation.</p>
+    </div>
+  </div>
+  <p class="source">Sec. 1; project page</p>
+  <aside class="notes">What to say.</aside>
+</section>
+
+<!-- VERSUS: two conversations; messages appear one click at a time -->
+<section id="intro-3">
+  <h2>Same request, two very different conversations</h2>
+  <div class="versus">
+    <div class="chat">
+      <span class="chat-head">Non-collaborative LLM</span>
+      <div class="msg user fragment">I need to write about how optimism can improve our well-being</div>
+      <div class="msg ai fragment">Here's a piece for you: The Power of Optimism&hellip; <span class="dim">(many tokens)</span></div>
+      <div class="msg user fragment">The tone is too formal and examples are too old-school.</div>
+      <div class="msg ai fragment"><span class="dim">(many back-and-forth turns)</span></div>
+      <div class="verdict bad fragment">BLEU 0.32 &middot; interactivity 0.2</div>
+    </div>
+    <div class="chat">
+      <span class="chat-head ours">CollabLLM</span>
+      <div class="msg user fragment">I need to write about how optimism can improve our well-being</div>
+      <div class="msg ai fragment">What tone are you aiming for? A. Uplifting B. Inspiring C. Heartfelt. Resilience or relationships?</div>
+      <div class="msg user fragment">(B). Resilience and relationships would be great!</div>
+      <div class="msg ai fragment">Here's an opening paragraph to set the tone&hellip; Shall we add anecdotes?</div>
+      <div class="verdict good fragment">BLEU 0.46 &middot; interactivity 0.8</div>
+    </div>
+  </div>
+  <p class="source">Fig. 2, p. 2 (messages shortened)</p>
+  <aside class="notes">What to say.</aside>
+</section>
+
+<!-- FLOW: a process, one step per click; mark the key step with "key" -->
+<section id="method-1">
+  <h2>CollabLLM scores a response by simulating what comes next</h2>
+  <div class="flow">
+    <div class="step fragment"><span class="n">&#9312;</span><h3>Context</h3><p>The conversation so far</p></div>
+    <div class="step fragment"><span class="n">&#9313;</span><h3>Response</h3><p>The policy proposes a reply</p></div>
+    <div class="step fragment"><span class="n">&#9314;</span><h3>Simulation</h3><p>A user simulator plays the next turns</p></div>
+    <div class="step key fragment"><span class="n">&#9315;</span><h3>Multiturn-aware reward</h3><p>Score the future, then fine-tune with RL</p></div>
+  </div>
+  <p class="source">Fig. 1, p. 1</p>
+  <aside class="notes">What to say.</aside>
+</section>
+
+<!-- TURNS + AUTO-ANIMATE: same data-id on both slides; changed classes morph -->
+<section id="method-2" data-auto-animate>
+  <h2>The reward looks <i>w</i> turns into the future</h2>
+  <div class="turns">
+    <div class="turn u past" data-id="u1">u&#8321;</div>
+    <div class="turn past" data-id="m1">m&#8321;</div>
+    <div class="turn u past" data-id="u2">u&#8322;</div>
+    <div class="turn now" data-id="m2">m&#8322;</div>
+    <div class="turn u ahead" data-id="u3">u&#8323;</div>
+    <div class="turn ahead" data-id="m3">m&#8323;</div>
+    <div class="turn u" data-id="u4">u&#8324;</div>
+    <div class="turn" data-id="m4">m&#8324;</div>
+  </div>
+  <p class="turns-note" data-id="note">w = 1: simulate one more turn after the response</p>
+  <p class="source">Sec. 3.1.2, p. 4</p>
+  <aside class="notes">What to say.</aside>
+</section>
+<section id="method-3" data-auto-animate>
+  <h2>The reward looks <i>w</i> turns into the future</h2>
+  <div class="turns">
+    <div class="turn u past" data-id="u1">u&#8321;</div>
+    <div class="turn past" data-id="m1">m&#8321;</div>
+    <div class="turn u past" data-id="u2">u&#8322;</div>
+    <div class="turn now" data-id="m2">m&#8322;</div>
+    <div class="turn u ahead" data-id="u3">u&#8323;</div>
+    <div class="turn ahead" data-id="m3">m&#8323;</div>
+    <div class="turn u ahead" data-id="u4">u&#8324;</div>
+    <div class="turn ahead" data-id="m4">m&#8324;</div>
+  </div>
+  <p class="turns-note" data-id="note">w = 2: the setting used for training, balancing gains and cost</p>
+  <p class="source">Sec. 5.1, p. 6</p>
+  <aside class="notes">What to say.</aside>
+</section>
+
+<!-- EQUATION: the equation, then one term per click -->
+<section id="method-4">
+  <h2>A response is worth the conversation it leads to</h2>
+  <div class="equation">$$\mathrm{MR}(m_j \mid t^h_j, g) = \mathbb{E}_{t^f_j \sim P(t^f_j \mid t_{1:j})}\, R^*(t_{1:j} \cup t^f_j \mid g)$$</div>
+  <ul class="terms">
+    <li class="fragment">$t^f_j$: future turns, sampled with a user simulator</li>
+    <li class="fragment">$R^* \approx R_{\text{ext}} + R_{\text{int}}$: task success plus efficiency and engagement</li>
+  </ul>
+  <p class="source">Eq. 1&ndash;2, p. 3</p>
+  <aside class="notes">What to say.</aside>
+</section>
+
+<!-- BAR CHART: series listed in a data-show-series fragment start hidden and appear on click.
+     roles: ours (orange), ours2 (light orange), base (grey), base2 (light grey), other (blue) -->
+<section id="results-1">
+  <h2>Interactivity rises on all three tasks</h2>
+  <div class="chart">
+    <canvas data-chart='{"type":"bar","labels":["Document editing","Coding","Math"],"axis":"Interactivity (ITR)","min":0,"max":100,"decimals":1,
+      "series":[{"name":"Base","role":"base2","data":[46.0,22.0,44.0]},
+                {"name":"Proactive Base","role":"base","data":[62.0,33.7,46.0]},
+                {"name":"CollabLLM (Online DPO)","role":"ours","data":[92.0,52.0,60.0]}]}'></canvas>
+    <span class="fragment" data-show-series="2"></span>
+  </div>
+  <p class="source">Table 1, p. 6</p>
+  <aside class="notes">What to say.</aside>
+</section>
+
+<!-- LINE CHART: no roles means colours by order; values:false hides the number labels -->
+<section id="results-2">
+  <h2>Online training gives the most interactive models</h2>
+  <div class="chart">
+    <canvas data-chart='{"type":"line","labels":["Base","Proactive","SFT","PPO","Offline DPO","Online DPO"],"axis":"Interactivity (ITR)","min":0,"max":100,"values":false,
+      "series":[{"name":"Document editing","data":[46.0,62.0,68.0,78.0,82.0,92.0]},
+                {"name":"Coding","data":[22.0,33.7,42.0,40.7,46.7,52.0]},
+                {"name":"Math","data":[44.0,46.0,58.0,52.0,50.0,60.0]}]}'></canvas>
+  </div>
+  <p class="source">Table 1, p. 6</p>
+  <aside class="notes">What to say.</aside>
+</section>
+
+<!-- STATS: 2 to 4 headline numbers that count up -->
+<section id="results-3" class="band">
+  <h2>The gains hold in simulation and with 201 real users</h2>
+  <div class="stats">
+    <div class="stat"><span class="num count">+18.5%</span><span class="label">task performance</span></div>
+    <div class="stat"><span class="num count">+46.3%</span><span class="label">interactivity</span></div>
+    <div class="stat"><span class="num count">+17.6%</span><span class="label">user satisfaction</span></div>
+    <div class="stat"><span class="num count">&minus;10.4%</span><span class="label">time spent by users</span></div>
+  </div>
+  <p class="source">Abstract; Sec. 5 and 6</p>
+  <aside class="notes">What to say.</aside>
+</section>
+
+<!-- TABLE: zone-base (green) and zone-ours (orange) as in the paper; best values in orange -->
+<section id="results-4">
+  <h2>Every CollabLLM variant beats both baselines</h2>
+  <table>
+    <tr><th></th><th colspan="2">Document editing</th><th colspan="2">Coding</th><th colspan="2">Math</th></tr>
+    <tr><th>Model</th><th>BLEU</th><th>ITR</th><th>Pass rate</th><th>ITR</th><th>Accuracy</th><th>ITR</th></tr>
+    <tr class="zone-base"><td>Base</td><td>32.2</td><td>46.0</td><td>9.3</td><td>22.0</td><td>11.0</td><td>44.0</td></tr>
+    <tr class="zone-base"><td>Proactive Base</td><td>35.0</td><td>62.0</td><td>11.0</td><td>33.7</td><td>12.5</td><td>46.0</td></tr>
+    <tr class="zone-ours fragment"><td>SFT</td><td>35.2</td><td>68.0</td><td>11.7</td><td>42.0</td><td>13.5</td><td>58.0</td></tr>
+    <tr class="zone-ours fragment"><td>PPO</td><td class="best">38.5</td><td>78.0</td><td class="best">14.0</td><td>40.7</td><td>13.0</td><td>52.0</td></tr>
+    <tr class="zone-ours fragment"><td>Offline DPO</td><td>36.4</td><td>82.0</td><td>12.3</td><td>46.7</td><td>15.5</td><td>50.0</td></tr>
+    <tr class="zone-ours fragment"><td>Online DPO</td><td>36.8</td><td class="best">92.0</td><td>13.0</td><td class="best">52.0</td><td class="best">16.5</td><td class="best">60.0</td></tr>
+  </table>
+  <p class="source">Table 1, p. 6</p>
+  <aside class="notes">What to say.</aside>
+</section>
+
+<!-- QUOTES: what users or reviewers said -->
+<section id="results-5">
+  <h2>Users felt guided rather than answered</h2>
+  <div class="quotes">
+    <div class="quote fragment fade-up"><h3>Creative</h3><p>Asking questions and making you think of things you <strong>never thought of</strong>.</p></div>
+    <div class="quote fragment fade-up"><h3>Focused</h3><p>The AI really helped me with <strong>focusing on one part</strong> of the story at a time.</p></div>
+    <div class="quote fragment fade-up"><h3>Guided</h3><p>It helped really well to navigate what to say and <strong>what information is needed</strong>.</p></div>
+  </div>
+  <p class="source">Table 3, p. 8</p>
+  <aside class="notes">What to say.</aside>
+</section>
+
+<!-- TERMINAL: lines type in automatically; "cmd" lines get a $ prompt, "out" lines are grey -->
+<section id="results-6">
+  <h2>Try it in four commands</h2>
+  <div class="terminal">
+    <div class="dots"><i></i><i></i><i></i></div>
+    <pre><span class="line cmd">pip install collabllm</span><span class="line cmd">git clone https://github.com/Wuyxin/collabllm.git</span><span class="line cmd">python -m scripts.engine.build_dataset &lt;...&gt;</span><span class="line cmd">python -m scripts.train.{sft/*_dpo/ppo} &lt;...&gt;</span></pre>
+  </div>
+  <p class="lead">Models: huggingface.co/collabllm</p>
+  <p class="source">Project page</p>
+  <aside class="notes">What to say.</aside>
+</section>
+
+<!--
+  Two more layouts without demo content (they need your figure files):
+
+  FIGURE
+  <section id="method-5">
+    <h2>Message as a sentence</h2>
+    <figure>
+      <img src="assets/figures/fig1.png" alt="What the figure shows">
+      <figcaption>One line telling the audience where to look</figcaption>
+    </figure>
+    <p class="source">Fig. 1, p. 1</p>
+  </section>
+
+  TWO COLUMNS (add wide-left or wide-right to .cols for uneven widths; a .chart fits in a column too)
+  <section id="method-6">
+    <h2>Message as a sentence</h2>
+    <div class="cols wide-right">
+      <ul><li>Point</li><li>Point</li></ul>
+      <figure><img src="assets/figures/fig3.png" alt="..."></figure>
+    </div>
+    <p class="source">Fig. 3, p. 5</p>
+  </section>
+-->
