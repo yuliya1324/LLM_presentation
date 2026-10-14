@@ -1,0 +1,211 @@
+<section id="ablations-1" class="band">
+  <h2>Later papers already target three of CollabLLM's open problems</h2>
+  <table>
+    <tr><th>Open problem</th><th>Later paper</th><th>How</th></tr>
+    <tr class="fragment"><td>Simulators are easier than real users</td><td>UserLM-8b</td><td>Trained on real chats</td></tr>
+    <tr class="fragment"><td>Asks on 27.7% of clear questions</td><td>PPP</td><td>Reward counts the user's effort</td></tr>
+    <tr class="fragment"><td>Tested on its own simulator</td><td>Lost in Conversation</td><td>Another team's benchmark</td></tr>
+  </table>
+  <p class="source">App. F.2, p. 24; Table 2, p. 7 &middot; UserLM-8b (Naous et al., 2025) &middot; PPP (Sun et al., 2025) &middot; Lost in Conversation (Laban et al., 2026)</p>
+  <aside class="notes">
+    Thanks, Elgun. Those results leave open questions, and later papers already target three of
+    them. Click: simulated users are easier than real ones, which the authors acknowledge in
+    Appendix F.2. UserLM-8b, a simulator trained on real chats, drops GPT-4o's score from 74.6 to
+    57.4. SimulatorArena finds unconditioned simulators overly verbose and polite, and Lost in
+    Simulation shows agent success shifting by up to 9 points with the simulator.
+    Click: CollabLLM asks on 27.7% of Abg-CoQA's clear questions; PPP's reward charges the user's
+    effort per question. Click: its benchmarks use its own simulator. Lost in Conversation is
+    another team's, where 15 LLMs lose 39%.
+  </aside>
+</section>
+
+<section id="ablations-2">
+  <h2>+46.3% interactivity is +0.07 to +0.15 points on the judge's own 1&ndash;3 scale</h2>
+  <div class="cols">
+    <div class="chart">
+      <canvas data-chart='{"type":"bar","horizontal":true,"labels":["Doc","Code","Math"],"axis":"ITR as reported (0–1) ↑","min":0,"max":1,"decimals":2,
+        "series":[{"name":"Proactive Base","role":"base","data":[0.62,0.337,0.46]},
+                  {"name":"CollabLLM","role":"ours","data":[0.92,0.52,0.60]}]}'></canvas>
+    </div>
+    <div class="chart fragment">
+      <canvas data-chart='{"type":"bar","horizontal":true,"labels":["Doc","Code","Math"],"axis":"Judge score (1–3) ↑","min":1,"max":3,"decimals":2,
+        "series":[{"name":"Proactive Base","role":"base","data":[2.81,2.67,2.73]},
+                  {"name":"CollabLLM","role":"ours","data":[2.96,2.76,2.80]}]}'></canvas>
+    </div>
+  </div>
+  <ul>
+    <li class="fragment">"+17.6% satisfaction" matches the "very good" gap, 56.9% vs 39.3%; the mean rose 4.2%</li>
+  </ul>
+  <p class="source">Table 1, p. 6; App. D.4, p. 20; Fig. 7 and Sec. 6, p. 7&ndash;8; IJCAI-26 extended abstract (Wu et al., 2026)</p>
+  <aside class="notes">
+    Two headline numbers deserve a closer look. The judge scores interactivity from 1 to 3, and
+    since every method scores above 2.5, Appendix D.4 rescales it as 2 times S minus 2.5. Left:
+    the scores as reported. Click: the same scores on the judge's own scale. CollabLLM gains 0.15,
+    0.09 and 0.07 points over Proactive Base. The authors' IJCAI-26 version also corrects the
+    headline from 46.3 to 44.3%. Click: "+17.6% satisfaction" matches the gap in "very good"
+    ratings, 56.9 versus 39.3%, in percentage points. The mean rating rose 4.2%.
+  </aside>
+</section>
+
+<section id="ablations-3">
+  <h2>Three gaps in the evaluation shaped our test</h2>
+  <div class="cards">
+    <div class="card fragment fade-up">
+      <span class="icon">1</span>
+      <h3>Eval prompts CollabLLM, not Base</h3>
+      <p><strong>We test prompt and LoRA adapter (trained add-on) apart.</strong></p>
+    </div>
+    <div class="card fragment fade-up">
+      <span class="icon">2</span>
+      <h3>No error bars</h3>
+      <p>Math: 12.5% &rarr; 16.5%. <strong>We report 95% CIs.</strong></p>
+    </div>
+    <div class="card fragment fade-up">
+      <span class="icon">3</span>
+      <h3>Own simulator and tasks</h3>
+      <p><strong>We use another team's benchmark.</strong></p>
+    </div>
+  </div>
+  <p class="source">Eval script: scripts/engine/inference.py, github.com/Wuyxin/collabllm; Table 1, p. 6; Sec. 4, p. 4&ndash;5</p>
+  <aside class="notes">
+    These gaps shaped our test. Click: the released evaluation script gives CollabLLM its
+    proactive system prompt but not the base model. So we test the prompt and the LoRA adapter
+    apart. The adapter is the small set of weights CollabLLM trains on Llama, as in method-7.
+    Click: there are no error bars. Math accuracy rises from 12.5 to 16.5% on 200 problems, and a
+    95% interval on that difference is about plus or minus 7 points. We report 95% confidence
+    intervals. Click: it is tested on its own simulator and tasks, so we use another team's
+    benchmark.
+  </aside>
+</section>
+
+<section id="ablations-4">
+  <h2>Given a problem in pieces, Llama-3.1-8B drops from 77% to 43% correct</h2>
+  <div class="versus">
+    <div class="chat">
+      <span class="chat-head">Whole: one turn</span>
+      <div class="msg user">John buys 2 pairs of shoes for each of his 3 children. They cost $60 each. How much did he pay?</div>
+      <div class="msg ai"><span class="dim">&hellip;</span></div>
+      <div class="verdict good fragment" data-fragment-index="4">Base: 76.7% correct [70.2, 82.8]</div>
+    </div>
+    <div class="chat">
+      <span class="chat-head">Split: one piece (shard) per turn</span>
+      <div class="msg user fragment" data-fragment-index="0">how much did John spend on shoes?</div>
+      <div class="msg ai fragment" data-fragment-index="0"><span class="dim">&hellip;</span></div>
+      <div class="msg user fragment" data-fragment-index="1">John purchased 2 pairs of shoes.</div>
+      <div class="msg ai fragment" data-fragment-index="1"><span class="dim">&hellip;</span></div>
+      <div class="msg user fragment" data-fragment-index="2">he bought those shoes for each of his 3 kids.</div>
+      <div class="msg ai fragment" data-fragment-index="2"><span class="dim">&hellip;</span></div>
+      <div class="msg user fragment" data-fragment-index="3">each pair of shoes cost $60.</div>
+      <div class="verdict bad fragment" data-fragment-index="4">Base: 42.9% correct [36.3, 49.5]</div>
+    </div>
+  </div>
+  <p class="source">Our runs: Lost in Conversation, 103 GSM8K problems (example: sharded-GSM8K/117)</p>
+  <aside class="notes">
+    Here is that benchmark, Lost in Conversation, on one real problem. Left: the whole problem in
+    one turn. Right: the same problem split into pieces, which the benchmark calls shards. A
+    simulated user, GPT-4o-mini told to be lazy and brief, reveals one piece per turn and answers
+    anything else with "I don't know". Click through the pieces: any answer before the last one
+    has to guess the numbers. Click: over 103 problems, Llama-3.1-8B falls from 76.7 to 42.9%
+    correct. A pilot at the paper's sampling settings matches the benchmark's published numbers;
+    it is in the backup.
+  </aside>
+</section>
+
+<section id="ablations-5">
+  <h2>CollabLLM loses just as much: every assistant drops 27 to 34 points</h2>
+  <div class="chart short">
+    <canvas data-chart='{"type":"bar","labels":["Whole","Split"],"axis":"Correct (%) ↑","min":0,"max":100,"decimals":1,
+      "series":[{"name":"Base","role":"base2","data":[76.7,42.9]},
+                {"name":"Base + prompt","role":"base","data":[76.4,46.2]},
+                {"name":"CollabLLM","role":"ours2","data":[75.4,43.1]},
+                {"name":"CollabLLM + prompt","role":"ours","data":[74.8,48.0]}]}'></canvas>
+    <span class="fragment" data-show-series="2"></span>
+    <span class="fragment" data-show-series="1"></span>
+    <span class="fragment" data-show-series="3"></span>
+  </div>
+  <ul>
+    <li>2 &times; 2 design: CollabLLM's LoRA adapter on or off, its system prompt on or off</li>
+    <li class="fragment">Drop vs Base: CollabLLM &minus;1.5 [&minus;8.3, 5.4]; CollabLLM + prompt &minus;7.0 [&minus;13.9, &minus;0.1], suggestive</li>
+  </ul>
+  <p class="source">Our runs: Lost in Conversation, 103 GSM8K problems</p>
+  <aside class="notes">
+    Now all four assistants. The design is 2 by 2: CollabLLM's LoRA adapter on or off, crossed
+    with its system prompt on or off. Base first: 76.7 whole, 42.9 split. Click: CollabLLM, the
+    adapter alone, drops just as much, 32 points. Click: Base with the prompt drops 30. Click:
+    CollabLLM with the prompt drops 27, the least. Click: compared with Base, CollabLLM's drop
+    differs by minus 1.5 points, interval minus 8.3 to plus 5.4. Adapter plus prompt is minus 7.0,
+    an interval that only just excludes zero, and one of three comparisons: suggestive.
+  </aside>
+</section>
+
+<section id="ablations-6">
+  <h2>Asking first comes from the prompt, not the adapter</h2>
+  <table>
+    <tr><th>Split conversations</th><th>Turns that ask (%)</th><th>Answers per conversation</th><th>Correct once all pieces are in (%) &uarr;</th></tr>
+    <tr class="zone-base"><td>Base</td><td>7.3</td><td>2.47</td><td>36.9</td></tr>
+    <tr class="zone-ours"><td>CollabLLM</td><td>8.0</td><td>2.56</td><td>41.2</td></tr>
+    <tr class="zone-base fragment" data-fragment-index="0"><td>Base&nbsp;+&nbsp;prompt</td><td>36.5</td><td>1.57</td><td>50.0</td></tr>
+    <tr class="zone-ours fragment" data-fragment-index="0"><td>CollabLLM&nbsp;+&nbsp;prompt</td><td>37.9</td><td>1.63</td><td class="best">52.3</td></tr>
+  </table>
+  <p class="source">Our runs: Lost in Conversation, 103 GSM8K problems</p>
+  <aside class="notes">
+    What changes inside these conversations? Without the prompt, Base and CollabLLM behave alike:
+    7 to 8% of turns ask a question, and they attempt about 2.5 answers per conversation. The
+    adapter shifts the turn shares by under 2 points. It also lifts final-answer accuracy a
+    little, from 36.9 to 41.2%. Click: CollabLLM's system prompt does much more. Over a third of
+    turns ask, about 1.6 answers per conversation, and final-answer accuracy reaches 50.0%
+    without the adapter and 52.3% with it. These are descriptive shares, without confidence
+    intervals.
+  </aside>
+</section>
+
+<section id="ablations-7">
+  <h2>The adapter learned CollabLLM's preferences, but it is a 0.06% weight change that barely changes behaviour here</h2>
+  <div class="stats">
+    <div class="stat"><span class="num count">0.06%</span><span class="label">median weight change from the adapter</span></div>
+    <div class="stat fragment"><span class="num count">72%</span><span class="label">of 300 training pairs have a DPO margin above 0: the adapter favours the chosen reply more than Base does</span></div>
+    <div class="stat fragment"><span class="num count">under 2</span><span class="label">points of shift from the adapter in asking and premature answers</span></div>
+  </div>
+  <p class="source">Our analysis of CollabLLM's released math adapter and training data; Our runs: Lost in Conversation, 103 GSM8K problems</p>
+  <aside class="notes">
+    So why doesn't the adapter matter? First, it is tiny: the median weight matrix changes by
+    0.06%. Its learning rates, 1e-5 and 5e-6, suit full fine-tuning, while LoRA usually trains
+    around 1e-4. Click: yet it learned. On 300 pairs from CollabLLM's released data, its DPO
+    margin, how much more it favours the chosen reply than Base does, is above zero for 72%: mean
+    plus 3.71 nats, interval 3.05 to 4.38. We can't confirm these were its exact training pairs.
+    Click: but in Lost in Conversation it moves asking and premature answers by under 2 points.
+  </aside>
+</section>
+
+<section id="ablations-8">
+  <h2>60% of training pairs are decided by style alone, and their labels are the noisiest</h2>
+  <div class="stats">
+    <div class="stat"><span class="num count">60%</span><span class="label">of pairs are equally correct: style and length decide (40% differ in correctness)</span></div>
+    <div class="stat fragment"><span class="num count">18%</span><span class="label">label flip chance from simulation noise (12% when correctness differs)</span></div>
+    <div class="stat fragment"><span class="num count">46%</span><span class="label">gap within one standard error, the 3-session noise level (32% when correctness differs)</span></div>
+  </div>
+  <p class="source">Our analysis of CollabLLM's released training data</p>
+  <aside class="notes">
+    Last, the training signal itself. As on method-3, each reply's score averages 3 simulated
+    sessions, and method-5's pairs keep the higher score as chosen. In CollabLLM's math data, 60%
+    of the 2,527 pairs are equally correct, so style and length alone decide; 40% differ in
+    correctness. Click: the style-only pairs have small gaps, so rerunning the 3 sessions would
+    flip about 18% of their labels, against 12%. Click: 46% have a gap within one standard error,
+    the noise level of a 3-session average, against 32%. The signal meant to teach collaboration
+    is the least reliable. These are normal-approximation sizes, not exact rates.
+  </aside>
+</section>
+
+<section id="ablations-9" class="statement band">
+  <h2>In our test, collaboration came from the prompt, and the training signal was noisy</h2>
+  <p class="lead">Next: Found in Conversation (2026, CollabLLM's first author) keeps &ge;92% of single-turn performance with self-distillation.</p>
+  <p class="source">Found in Conversation (Chen, Wu and Leskovec, 2026)</p>
+  <aside class="notes">
+    To sum up. In our test, when a math problem arrives in pieces, CollabLLM gets as lost as its
+    base model. The collaboration we did see, asking first and answering right more often, came
+    from its system prompt rather than its trained adapter. And the labels meant to teach
+    collaboration are the noisiest. Next, Found in Conversation, by CollabLLM's first author,
+    keeps at least 92% of single-turn performance with self-distillation: a teacher sees the
+    whole task, a student sees it in pieces. Iuliia will now show how we built these slides.
+  </aside>
+</section>
