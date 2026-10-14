@@ -1,0 +1,34 @@
+<section id="harness-1">
+  <h2>Our repo turns a paper into slides in four steps</h2>
+  <div class="cols wide-right">
+    <ul>
+      <li class="fragment" data-fragment-index="0">&#9312; <strong>Fetch</strong> paper, code, site</li>
+      <li class="fragment" data-fragment-index="1">&#9313; <strong>Plan</strong> one message per slide</li>
+      <li class="fragment" data-fragment-index="2">&#9314; <strong>Draft</strong> one file per presenter</li>
+      <li class="fragment" data-fragment-index="3">&#9315; <strong>Iterate</strong> on screenshots</li>
+    </ul>
+    <div class="terminal">
+      <div class="dots"><i></i><i></i><i></i></div>
+      <pre><span class="line cmd fragment" data-fragment-index="0">/ingest &lt;arxiv&gt; &lt;repo&gt; &lt;website&gt;</span><span class="line out fragment" data-fragment-index="0">  sources/notes/  paper.md glossary.md &hellip;</span><span class="line out fragment" data-fragment-index="0">  assets/figures/ fig1.png &hellip; table4.png</span><span class="line cmd fragment" data-fragment-index="1">cat outline.md</span><span class="line out fragment" data-fragment-index="1">  ### 00-title (Iuliia)</span><span class="line out fragment" data-fragment-index="1">  - title-1: Title + presenters</span><span class="line cmd fragment" data-fragment-index="2">/draft 05-harness</span><span class="line cmd fragment" data-fragment-index="3">python build.py --shots --section 05</span><span class="line cmd fragment" data-fragment-index="4">/revise harness-1 add the link to our repo</span><span class="line cmd fragment" data-fragment-index="5">/review</span></pre>
+    </div>
+  </div>
+  <p class="source"><a href="https://github.com/yuliya1324/LLM_presentation"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> github.com/yuliya1324/LLM_presentation</a></p>
+  <aside class="notes">
+    To finish, here is how we built these slides. We used one repo with Claude Code, and every
+    step reads the files the previous step wrote.
+    Step one, fetch: the /ingest command downloaded the paper, its LaTeX source, the code and the
+    project page. It wrote shared notes in sources/notes: the paper with exact numbers and page
+    references, the repo, the website's style and a glossary. It also exported the original
+    figures to assets/figures.
+    Step two, plan: from those notes we wrote outline.md, with one line per slide giving the
+    single message that slide makes and who owns it.
+    Step three, draft: each of us ran /draft on our own file in sections/. CLAUDE.md sets the
+    rules: only the layouts in template/, at most 40 words per slide, numbers that match the
+    paper with a source, and the orange colour reserved for CollabLLM.
+    Step four, iterate: build.py merges the sections into one reveal.js deck and screenshots
+    every slide. We checked the screenshots and fixed each slide with /revise, one click at a time,
+    then ran /review across the whole deck as a final check.
+    The rules worked like a reward we could check, so the three of us produced one consistent
+    deck. Thank you, we are happy to take questions.
+  </aside>
+</section>
