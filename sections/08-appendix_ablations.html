@@ -1,4 +1,23 @@
 <section id="appendix_ablations-1">
+  <h2>How we ran it: one GPU, four assistants, 3,296 conversations</h2>
+  <div class="flow">
+    <div class="step"><span class="n">&#9312;</span><h3>User</h3><p>GPT-4o-mini reveals one piece per turn</p></div>
+    <div class="step key"><span class="n">&#9313;</span><h3>Assistant</h3><p>vLLM on one RTX 3090: Llama-3.1-8B, with or without CollabLLM's LoRA and prompt</p></div>
+    <div class="step"><span class="n">&#9314;</span><h3>Judge</h3><p>GPT-4o-mini labels each turn and extracts answers</p></div>
+    <div class="step"><span class="n">&#9315;</span><h3>Scoring</h3><p>Our re-scoring; 95% bootstrap CIs over the 103 problems</p></div>
+  </div>
+  <p>2 h 54 min in total; about $3.35 of API calls.</p>
+  <p class="source">Our runs: Lost in Conversation, 103 GSM8K problems</p>
+  <aside class="notes">
+    We ran everything ourselves. GPT-4o-mini plays the benchmark's lazy user and reveals one piece
+    per turn. One vLLM server on a single RTX 3090 serves Llama-3.1-8B in bf16, with or without
+    CollabLLM's math LoRA and its system prompt. GPT-4o-mini also labels every turn and extracts
+    answers; we re-score them and bootstrap 95% intervals over the 103 problems. The 3,296
+    conversations took 2 h 54 min and about 3.35 dollars.
+  </aside>
+</section>
+
+<section id="appendix_ablations-2">
   <h2>Our setup reproduces the benchmark's published baseline</h2>
   <table>
     <tr><th>Llama-3.1-8B-Instruct, % correct</th><th>Whole</th><th>Split</th></tr>
@@ -8,16 +27,15 @@
   <p>We used top_p 0.9: at 1.0, 5.8% of whole and 9.3% of split replies hit the 1,000-token cap.</p>
   <p class="source">Lost in Conversation (Laban et al., 2026), Table 1, Math &middot; Our runs: Lost in Conversation, 103 GSM8K problems</p>
   <aside class="notes">
-    If asked whether our setup matches the benchmark: with the paper's sampling, top_p 1.0, a
-    pilot of Llama-3.1-8B with one run per problem scores 68.0% whole and 39.8% split. The paper
-    reports 63.9 and 37.4, both inside our 95% intervals. For the main runs we used top_p 0.9,
-    because at 1.0, 5.8% of whole and 9.3% of split replies ran into the 1,000-token cap, mostly
-    as gibberish; at 0.9 it is 0.3 to 1.7% in every cell. That lifts Base to 76.7 and 42.9, so we
+    Yes, it matches. At the paper's sampling, top_p 1.0, a pilot with one run per problem gives
+    Llama-3.1-8B 68.0% whole and 39.8% split; the paper's 63.9 and 37.4 fall inside both
+    intervals. For the main runs we used top_p 0.9, because at 1.0, 5.8% of whole and 9.3% of
+    split replies hit the token cap, mostly as gibberish. That lifts Base to 76.7 and 42.9, so we
     compare assistants within our runs.
   </aside>
 </section>
 
-<section id="appendix_ablations-2">
+<section id="appendix_ablations-3">
   <h2>We fixed two scoring bugs in the benchmark, which turned 115 conversations correct</h2>
   <div class="cards">
     <div class="card">
@@ -38,17 +56,15 @@
   </div>
   <p class="source">Our runs: Lost in Conversation, 103 GSM8K problems; task_math.py in github.com/microsoft/lost_in_conversation</p>
   <aside class="notes">
-    Two bugs in the benchmark's math scoring, both fixed by re-scoring every conversation. First,
-    the answer extractor must copy answers verbatim, and GPT-4o-mini likely drops thousands
-    separators: extraction failed for 33% of answers of 1,000 or more, against 1.3% below. After
-    our fix it is 0.2 and 0.5%. Second, the evaluator trims cents with rstrip of dot-zero-zero,
-    which strips characters rather than a suffix, so 720.00 became 72; we use removesuffix.
-    Together, 115 conversations became correct and none became wrong. Every assistant still
-    drops 26 to 34 points.
+    Two scoring bugs, both fixed by re-scoring every conversation. The extractor must copy answers
+    verbatim, and GPT-4o-mini likely drops thousands separators: extraction failed for 33% of
+    answers of 1,000 or more; after our fix, 0.2%. The evaluator's rstrip of dot-zero-zero turned
+    720.00 into 72; we use removesuffix. 115 conversations became correct, none became wrong, and
+    every assistant still drops 26 to 34 points.
   </aside>
 </section>
 
-<section id="appendix_ablations-3">
+<section id="appendix_ablations-4">
   <h2>All accuracy numbers with 95% CIs</h2>
   <table>
     <tr><th>Re-scored (logged) [95% CI]</th><th>Base</th><th>Base + prompt</th><th>CollabLLM</th><th>CollabLLM + prompt</th></tr>
@@ -56,20 +72,106 @@
     <tr><td>Split, %</td><td>42.9&nbsp;(40.4)<br>[36.3,&nbsp;49.5]</td><td>46.2&nbsp;(41.7)<br>[40.0,&nbsp;52.4]</td><td>43.1&nbsp;(41.4)<br>[36.5,&nbsp;49.7]</td><td>48.0&nbsp;(43.7)<br>[41.0,&nbsp;55.0]</td></tr>
     <tr><td>Drop, points</td><td>33.8&nbsp;(33.7)</td><td>30.2&nbsp;(29.4)</td><td>32.3&nbsp;(31.5)</td><td>26.8&nbsp;(25.9)</td></tr>
     <tr><td>Split vs Base</td><td>&ndash;</td><td>+3.3&nbsp;(+1.4)<br>[&minus;1.9,&nbsp;+8.5]</td><td>+0.2&nbsp;(+1.0)<br>[&minus;5.0,&nbsp;+5.4]</td><td>+5.0&nbsp;(+3.3)<br>[&minus;0.6,&nbsp;+10.9]</td></tr>
-    <tr><td>Drop vs Base</td><td>&ndash;</td><td>&minus;3.6&nbsp;(&minus;4.3)<br>[&minus;11.0,&nbsp;+3.8]</td><td>&minus;1.5&nbsp;(&minus;2.3)<br>[&minus;8.3,&nbsp;+5.4]</td><td>&minus;7.0&nbsp;(&minus;7.8)<br>[&minus;13.9,&nbsp;&minus;0.1]</td></tr>
+    <tr><td>Smaller drop than Base</td><td>&ndash;</td><td>3.6&nbsp;(4.3)<br>[&minus;3.8,&nbsp;11.0]</td><td>1.5&nbsp;(2.3)<br>[&minus;5.4,&nbsp;8.3]</td><td>7.0&nbsp;(7.8)<br>[0.1,&nbsp;13.9]</td></tr>
   </table>
   <p class="source">Our runs: Lost in Conversation, 103 GSM8K problems</p>
   <aside class="notes">
-    Every number behind our accuracy charts. Each cell is the re-scored value, the value logged
-    before our scoring fixes in parentheses, and the 95% bootstrap interval over the 103 problems
-    in brackets. Drops and differences are in points. Every assistant loses 27 to 34 points. No
-    split-accuracy difference from Base has an interval that excludes zero. Only CollabLLM plus
-    prompt's smaller drop, minus 7.0, excludes zero, by 0.1 point, and it is one of three
-    comparisons with Base, so we call it suggestive.
+    Here is every accuracy number: the re-scored value, the value logged before our fixes in
+    parentheses, and the 95% bootstrap interval over the 103 problems. Drops and differences are in
+    points; the last row is how much smaller each drop is than Base's. No split-accuracy difference excludes
+    zero. Only CollabLLM plus prompt's 7.0-point smaller drop does, by 0.1, and as one of three
+    comparisons with Base it is only suggestive.
   </aside>
 </section>
 
-<section id="appendix_ablations-4">
+<section id="appendix_ablations-5">
+  <h2>What the prompt changes, turn by turn</h2>
+  <table>
+    <tr><th>Split conversations</th><th>Base</th><th>CollabLLM</th><th>Base + prompt</th><th>CollabLLM + prompt</th></tr>
+    <tr><td>Clarification, % of turns</td><td>2.8</td><td>3.7</td><td>10.1</td><td>11.7</td></tr>
+    <tr><td>Interrogation, % of turns</td><td>4.5</td><td>4.3</td><td>26.4</td><td>26.2</td></tr>
+    <tr><td>Answer&nbsp;attempt,&nbsp;%&nbsp;of&nbsp;turns</td><td>46.0</td><td>47.4</td><td>29.3</td><td>30.7</td></tr>
+    <tr><td>Discussion, % of turns</td><td>40.7</td><td>39.0</td><td>31.6</td><td>29.6</td></tr>
+    <tr><td>Answers per conversation</td><td>2.47</td><td>2.56</td><td>1.57</td><td>1.63</td></tr>
+    <tr><td>Premature answers, %</td><td>77.8</td><td>76.4</td><td>68.0</td><td>71.3</td></tr>
+    <tr><td>Their accuracy, %</td><td>11.8</td><td>9.3</td><td>19.9</td><td>20.2</td></tr>
+    <tr><td>Final-answer accuracy, %</td><td>36.9</td><td>41.2</td><td>50.0</td><td>52.3</td></tr>
+  </table>
+  <ul>
+    <li>Clarification: one short question. Interrogation: several questions at once.</li>
+  </ul>
+  <p class="source">Our runs: Lost in Conversation, 103 GSM8K problems</p>
+  <aside class="notes">
+    The prompt moves turns from answering to asking. Interrogation, several questions at once,
+    rises from about 4 to 26% of turns, and answer attempts fall from 46 or 47 to 29 or 31%. The
+    model answers about 1.6 instead of 2.5 times per conversation, fewer answers are premature,
+    given before the last piece, and those are right more often. The adapter alone moves each
+    share by under 2 points.
+  </aside>
+</section>
+
+<section id="appendix_ablations-6">
+  <h2>CollabLLM's prompt tells the model to ask instead of assume</h2>
+  <div class="quotes">
+    <div class="quote"><h3>Proactive</h3><p>The assistant is designed to be helpful, <strong>proactive, and highly interactive</strong>.</p></div>
+    <div class="quote"><h3>Ask, don't assume</h3><p>If the user's message is unclear or lacks necessary details, the assistant <strong>always asks for clarification rather than making assumptions</strong>.</p></div>
+    <div class="quote"><h3>Follow up</h3><p>The assistant <strong>asks specific follow-up questions</strong> and offers suggestions based on the user's needs, avoiding vague or generic prompts.</p></div>
+  </div>
+  <p>245 words in all, put unchanged in front of the benchmark's system message.</p>
+  <p class="source">App. D.3, p. 20; collabllm/prompts/system_prompt.txt at commit 7378aab</p>
+  <aside class="notes">
+    It says it outright. CollabLLM's system prompt, in Appendix D.3 and the released code, is 245
+    words. It makes the assistant proactive and highly interactive, says it always asks for
+    clarification rather than making assumptions, asks specific follow-up questions, and offers
+    multiple-choice answers to make replying easy. Our plus-prompt assistants put it, unchanged,
+    in front of the benchmark's own system message.
+  </aside>
+</section>
+
+<section id="appendix_ablations-7">
+  <h2>All three released CollabLLM adapters are equally small</h2>
+  <table>
+    <tr><th>Adapter</th><th>Matrices</th><th>Median change</th><th>Max change</th><th>Largest change in</th></tr>
+    <tr><td>Math</td><td>224</td><td>0.0584%</td><td>0.0948%</td><td>layer 2, v_proj</td></tr>
+    <tr><td>Code</td><td>224</td><td>0.0526%</td><td>0.0959%</td><td>layer 0, v_proj</td></tr>
+    <tr><td>Writing</td><td>224</td><td>0.0635%</td><td>0.1003%</td><td>layer 0, v_proj</td></tr>
+  </table>
+  <ul>
+    <li>The math adapter's margin comes mostly from rejected replies (&minus;3.52 vs +0.19 for chosen), so it mostly learned what to avoid</li>
+  </ul>
+  <p class="source">Our analysis of CollabLLM's released adapters and training data</p>
+  <aside class="notes">
+    No, the math adapter is not unusual. All three released adapters, math, code and writing,
+    change the median weight matrix by 0.05 to 0.06% and none by more than about 0.1%, over the
+    same 224 matrices; the largest changes sit in early value projections. On the math pairs, the
+    adapter mostly lowered the rejected replies, a log-ratio of minus 3.52 against plus 0.19 for
+    the chosen ones, so it learned mainly what to avoid.
+  </aside>
+</section>
+
+<section id="appendix_ablations-8">
+  <h2>Label noise in detail</h2>
+  <table>
+    <tr><th>Math preference pairs</th><th>Pairs</th><th>Mean gap</th><th>Flip chance</th><th>Within one SE</th></tr>
+    <tr><td>Equally correct</td><td>1,516</td><td>0.132</td><td>17.6%</td><td>45.5%</td></tr>
+    <tr><td>Different correctness</td><td>1,011</td><td>0.592</td><td>11.8%</td><td>31.9%</td></tr>
+    <tr><td>All pairs</td><td>2,527</td><td>0.316</td><td>15.3%</td><td>40.1%</td></tr>
+  </table>
+  <ul>
+    <li>Pairs offline DPO keeps (gap &ge; 0.02): 2,356, flip chance 13.3%, 36.2% within one SE</li>
+    <li>Table 5 reproduced: chosen 0.8637, rejected 0.5473; the paper's 0.863 and 0.547, ties kept</li>
+  </ul>
+  <p class="source">Our analysis of CollabLLM's released training data; Table 5, p. 15</p>
+  <aside class="notes">
+    Here are the exact numbers. Pairs with two equally correct replies have small score gaps, 0.132
+    on average, so 3-session noise would flip 17.6% of them, and 45.5% lie within one standard
+    error. Pairs that differ in correctness have 0.592, 11.8% and 31.9%. The pairs offline DPO
+    actually keeps are only slightly cleaner. And our analysis reproduces the paper's Table 5:
+    chosen 0.8637, rejected 0.5473.
+  </aside>
+</section>
+
+<section id="appendix_ablations-9">
   <h2>How we measured the adapter and the label noise</h2>
   <div class="equation">$\text{adapter size} = \operatorname{median} \dfrac{\lVert \Delta W \rVert_F}{\lVert W \rVert_F}, \qquad \Delta W = (\alpha / r)\, B A$</div>
   <div class="equation">$\text{DPO margin} = \log \dfrac{\pi_{\text{CollabLLM}}(y^+)}{\pi_{\text{Base}}(y^+)} - \log \dfrac{\pi_{\text{CollabLLM}}(y^-)}{\pi_{\text{Base}}(y^-)}$</div>
@@ -79,17 +181,15 @@
   </ul>
   <p class="source">Our analysis of CollabLLM's released math adapter and training data</p>
   <aside class="notes">
-    The three formulas behind our adapter and label-noise numbers. Adapter size: for each of the
-    224 weight matrices the LoRA adapter changes, the norm of its change, alpha over r times B
-    times A, relative to the original weight; we report the median. DPO margin: how much more the
-    adapter raises the chosen reply's log-probability, y plus, than the rejected one's, y minus,
-    compared with Base, in nats and in CollabLLM's training format. Above zero, it prefers the
-    chosen reply more than Base does. Flip chance: the normal probability that 3-session noise
-    reverses a pair; SE is the standard error of the difference of two 3-session means.
+    Adapter size is each adapted matrix's change, alpha over r times B times A, relative to the
+    weight itself, as a median over 224 matrices. The DPO margin is how much more the adapter
+    raises the chosen reply, y plus, than the rejected one, y minus, compared with Base, in nats.
+    The flip chance is the normal probability that 3-session noise reverses a pair, using the
+    standard error of the difference of two 3-session means.
   </aside>
 </section>
 
-<section id="appendix_ablations-5">
+<section id="appendix_ablations-10">
   <h2>More issues in the released code and paper</h2>
   <div class="cards">
     <div class="card">
@@ -110,12 +210,10 @@
   </div>
   <p class="source">examples/metrics/bleu.py, github.com/Wuyxin/collabllm; Table 6, p. 15; Table 1, p. 6; IJCAI-26 extended abstract (Wu et al., 2026)</p>
   <aside class="notes">
-    Three more issues, for questions. First, the released code computes the writing benchmark's
-    BLEU on characters, not words: nltk's sentence_bleu receives raw strings, so two paraphrased
-    sentences that score 0.0 on word-level BLEU get 0.505. Second, Table 6's learning rates, 1e-5
-    for SFT and 5e-6 for DPO, are typical of full fine-tuning; LoRA is usually trained around
-    1e-4, which may explain how small the adapter's change is. Third, the authors themselves
-    corrected the interactivity headline in their IJCAI-26 extended abstract: 44.3% instead of
-    46.3%, with Math at +30.4% rather than +36.4%.
+    Three more, if asked. The released code computes the writing benchmark's BLEU on characters,
+    so two paraphrases that score 0.0 on words get 0.505. The learning rates, 1e-5 for SFT and
+    5e-6 for DPO, are typical of full fine-tuning, while LoRA usually trains near 1e-4, which may
+    explain the tiny adapter. And the authors themselves corrected the interactivity headline to
+    44.3% in their IJCAI-26 abstract.
   </aside>
 </section>

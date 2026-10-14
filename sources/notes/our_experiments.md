@@ -12,6 +12,14 @@ Percentages = field x 100. `[lo, hi]` = the field's sibling `ci95`, a 95% bootst
 - Simulated user (Lost in Conversation's `prompts/user_agent.txt`): told to be lazy and brief, reveals at most one piece per turn in its own words, never asks questions, and answers questions the pieces don't cover with "I don't know". The conversation ends at the first correct answer or after the reply to the last piece.
 - Serving (our own deployment): all four assistants from one vLLM server on one RTX 3090 (24 GB), Llama-3.1-8B-Instruct in bf16 with CollabLLM's LoRA on top. The full run took 2 h 54 min for 3,296 conversations; GPT-4o-mini (user, turn labels and answer extraction) cost about $3.35.
 
+## CollabLLM's system prompt (App. D.3; `collabllm/prompts/system_prompt.txt` at commit 7378aab; 245 words)
+- Our "+ prompt" assistants put it, unchanged, in front of the benchmark's own system message.
+- Key sentences, verbatim:
+  - "The assistant is designed to be helpful, proactive, and highly interactive."
+  - "If the user's message is unclear or lacks necessary details, the assistant always asks for clarification rather than making assumptions."
+  - "The assistant asks specific follow-up questions and offers suggestions based on the user's needs, avoiding vague or generic prompts."
+  - "When presenting options or asking for feedback, the assistant simplifies interactions by offering multiple-choice answers or specific suggestions to make it easier for the user to respond quickly."
+
 ## Example problem (Lost in Conversation data, `sharded-GSM8K/117`)
 - Whole, one turn: "John buys 2 pairs of shoes for each of his 3 children. They cost $60 each. How much did he pay?" Correct answer: 360.
 - Split, one piece per turn (the simulated user rephrases each piece):

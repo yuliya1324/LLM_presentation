@@ -14,7 +14,7 @@ Talk: 20 min, about 22 slides
 | sections/05-harness.html | Iuliia | 1 | How we built harness for these slides |
 | sections/06-appendix_title.html | Iuliia | 1 | Appendix title |
 | sections/07-appendix_results.html | Elgun | 1 | Appendix for results |
-| sections/08-appendix_ablations.html | Yash | 5 | Backup for our tests |
+| sections/08-appendix_ablations.html | Yash | 10 | Backup for our tests |
 | sections/09-appendix_harness.html | Iuliia | 2 | Appendix for harness |
 
 ## Slide plan
@@ -67,11 +67,16 @@ Rules for this section:
 
 ### 08-appendix_ablations (Yash)
 Backup slides for questions, not presented. Same rules as 04.
-- appendix_ablations-1: Our setup reproduces the benchmark's published baseline [TABLE: the paper's 63.9 / 37.4 vs our top_p 1.0 pilot with CIs; one line on why we used top_p 0.9]
-- appendix_ablations-2: We fixed two scoring bugs in the benchmark, which turned 115 conversations correct [CARDS: thousands separators; rstrip(".00"); conclusions unchanged]
-- appendix_ablations-3: All accuracy numbers with 95% CIs [TABLE: per assistant, whole, split, drop, split vs Base, drop vs Base; logged values in parentheses]
-- appendix_ablations-4: How we measured the adapter and the label noise [EQUATION or CARDS: the three formulas in our_experiments.md]
-- appendix_ablations-5: More issues in the released code and paper [CARDS: character-level BLEU; LoRA learning rates; the IJCAI-26 correction from 46.3% to 44.3%]
+- appendix_ablations-1: How we ran it: one GPU, four assistants, 3,296 conversations [FLOW: GPT-4o-mini plays the user → one vLLM server on an RTX 3090 serves Llama-3.1-8B, with or without CollabLLM's LoRA and its prompt → GPT-4o-mini labels each turn and extracts answers → our re-scoring and 95% bootstrap CIs over the 103 problems; one line: 2 h 54 min, about $3.35 of API calls]
+- appendix_ablations-2: Our setup reproduces the benchmark's published baseline [TABLE: the paper's 63.9 / 37.4 vs our top_p 1.0 pilot with CIs; one line on why we used top_p 0.9]
+- appendix_ablations-3: We fixed two scoring bugs in the benchmark, which turned 115 conversations correct [CARDS: thousands separators; rstrip(".00"); conclusions unchanged]
+- appendix_ablations-4: All accuracy numbers with 95% CIs [TABLE: per assistant, whole, split, drop, split vs Base, drop vs Base; logged values in parentheses]
+- appendix_ablations-5: What the prompt changes, turn by turn [TABLE: per assistant, clarification, interrogation, answer attempt and discussion (% of turns), answers per conversation, share of answers given before the last piece, their accuracy, accuracy after the last piece; one line defining clarification vs interrogation]
+- appendix_ablations-6: CollabLLM's prompt tells the model to ask instead of assume [QUOTES: the key sentences quoted in our_experiments.md; one line: 245 words, put unchanged in front of the benchmark's system message]
+- appendix_ablations-7: All three released CollabLLM adapters are equally small [TABLE: math, code, writing: median and max change, largest-change matrix; one line: the math adapter's margin comes mostly from rejected replies (−3.52 vs +0.19 for chosen), so it mostly learned what to avoid]
+- appendix_ablations-8: Label noise in detail [TABLE: equally correct vs different correctness: pairs, mean gap, flip chance, share within one SE; one line each for the pairs offline DPO keeps (gap ≥ 0.02) and our reproduction of the paper's Table 5]
+- appendix_ablations-9: How we measured the adapter and the label noise [EQUATION or CARDS: the three formulas in our_experiments.md]
+- appendix_ablations-10: More issues in the released code and paper [CARDS: character-level BLEU; LoRA learning rates; the IJCAI-26 correction from 46.3% to 44.3%]
 
 ### 09-appendix_harness (Iuliia)
 - appendix_harness-1: Schema of folder structure

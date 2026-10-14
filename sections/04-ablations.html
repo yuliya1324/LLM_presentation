@@ -153,13 +153,12 @@
   <aside class="notes">
     What changes inside these conversations? Without the prompt, Base and CollabLLM behave alike:
     7 to 8% of turns ask a question, and they attempt about 2.5 answers per conversation. The
-    adapter shifts the turn shares by under 2 points. It also lifts final-answer accuracy a
-    little, from 36.9 to 41.2%. That column counts answers given after the last piece; the
-    previous slide counted conversations, which also include lucky early guesses. That is why
-    Base shows 36.9 here and 42.9 there. Click: CollabLLM's system prompt does much more. Over a third of
-    turns ask, about 1.6 answers per conversation, and final-answer accuracy reaches 50.0%
-    without the adapter and 52.3% with it. These are descriptive shares, without confidence
-    intervals.
+    adapter only nudges final-answer accuracy, from 36.9 to 41.2%. Click: with CollabLLM's
+    prompt, over a third of turns ask, answer attempts drop to about 1.6, and final answers are
+    right 50 to 52% of the time. No surprise: the prompt literally says the assistant 'always
+    asks for clarification rather than making assumptions' (backup 6). If asked: this column counts
+    answers given after the last piece; the previous slide counted conversations, which include
+    lucky early guesses.
   </aside>
 </section>
 
