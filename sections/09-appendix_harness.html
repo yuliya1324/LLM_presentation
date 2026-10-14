@@ -1,0 +1,42 @@
+<section id="appendix_harness-1">
+  <h2>Repository structure</h2>
+  <div class="terminal">
+    <div class="dots"><i></i><i></i><i></i></div>
+    <pre><span class="line cmd">tree -L 2</span><span class="line out">  CLAUDE.md           rules for Claude</span><span class="line out">  .claude/commands/   four skills</span><span class="line out">  sources/notes/      facts with pages</span><span class="line out">  assets/figures/     paper figures</span><span class="line out">  outline.md          slide plan</span><span class="line out">  sections/           one file each</span><span class="line out">  template/           layouts, theme</span><span class="line out">  build.py            deck + screenshots</span></pre>
+  </div>
+  <p class="source">README.md of our repo</p>
+  <aside class="notes">
+    This is the full layout of the repo behind these slides.
+    CLAUDE.md holds the rules every Claude Code session reads first: allowed layouts, word
+    limits, exact numbers with sources, orange only for CollabLLM.
+    .claude/commands holds our four skills, /ingest, /draft, /revise and /review.
+    /ingest fills sources/notes with notes on the paper, the code and the website, plus a
+    glossary, and puts the original figures in assets/figures.
+    outline.md is the plan: who owns which file and the single message of each slide.
+    Each of us writes only in our own file in sections/, using the layouts in template/.
+    build.py stitches the sections in filename order into one reveal.js deck and screenshots
+    each slide, so we can check for overflow before reviewing.
+  </aside>
+</section>
+
+<section id="appendix_harness-2">
+  <h2>Skill example <code>ingest.md</code></h2>
+  <div class="terminal">
+    <div class="dots"><i></i><i></i><i></i></div>
+    <pre><span class="line cmd">cat .claude/commands/ingest.md</span><span class="line out">---</span><span class="line out">description: Read the paper, repo, website and demo; write …</span><span class="line out">argument-hint: &lt;paper url or path&gt; [repo url] [website url]</span><span class="line out">---</span><span class="line out">Sources: $ARGUMENTS</span><span class="line out">1. Paper. For arXiv, download the PDF to `sources/paper.pdf` …</span><span class="line out">2. Figures. Copy the original figure files from the LaTeX …</span><span class="line out">3. Write `sources/notes/paper.md`: summary, problem …</span><span class="line out">4. Repo, if given: shallow clone into `sources/repo/`. Write …</span><span class="line out">5. Website and demo, if given: fetch them and write …</span><span class="line out">6. If there is a project website, note its look in …</span><span class="line out">7. Write `sources/notes/glossary.md`: terms, abbreviations and …</span><span class="line out">8. Fill in the header and a proposed slide plan in …</span></pre>
+  </div>
+  <p class="source">.claude/commands/ingest.md (first line of each step)</p>
+  <aside class="notes">
+    Here is one skill in full. A skill is just a Markdown file of instructions in
+    .claude/commands; typing /ingest with the paper, repo and website links runs it.
+    The description line is what Claude Code shows in the command menu.
+    Steps one and two download the PDF and the LaTeX source and copy the original figure
+    files, so we never redraw a paper figure.
+    Step three is the important one: it writes sources/notes/paper.md with every results table
+    copied in full and a page or section for every claim. Every later step reads facts only
+    from these notes, which keeps the numbers on our slides faithful to the paper.
+    Steps four to seven cover the repo, the website, its look and a glossary.
+    Step eight proposes a slide plan in outline.md, which we then edited and split between the
+    three of us. The skill never writes slides itself.
+  </aside>
+</section>

@@ -12,6 +12,10 @@ Talk: 20 min, about 22 slides
 | sections/03-results.html | Elgun | 6 | Setup, main results, ablations, user study, takeaways |
 | sections/04-ablations.html | Yash | 5 | Our own analysis and ablations targeting paper's limitations |
 | sections/05-harness.html | Iuliia | 1 | How we built harness for these slides |
+| sections/06-appendix_title.html | Iuliia | 1 | Appendix title |
+| sections/07-appendix_results.html | Elgun | 1 | Appendix for results |
+| sections/08-appendix_ablations.html | Yash | 1 | Appendix for ablations |
+| sections/09-appendix_harness.html | Iuliia | 2 | Appendix for harness |
 
 ## Slide plan
 
@@ -36,6 +40,9 @@ Layout and source in brackets are only suggestions. Facts are in `sources/notes/
 ### 05-harness (Iuliia)
 - harness-1: Describe how your harness works to make these slides. Show the structure of the repo, rules and the workflow: fetch resources -> write a plan -> draft slides -> iterate on them. Keep it minimal, don't make the slide overflow. Connect parts to each other.
 
-### 06-appendix (All)
-- appendix-1: Schema of folder structure
-- appendix-2: Example of a skill, e.g. ingest
+### 06-appendix_title (Iuliia)
+- appendix_title-1: One word on a slide "Appendix"
+
+### 09-appendix_harness (Iuliia)
+- appendix_harness-1: Schema of folder structure
+- appendix_harness-2: Example of a skill, e.g. ingest
