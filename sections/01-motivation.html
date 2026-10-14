@@ -57,27 +57,110 @@
   </aside>
 </section>
 
-<section id="motivation-2">
+<section id="motivation-2" data-auto-animate>
   <h2>Why does this happen, and how do the authors fix it?</h2>
-  <figure class="fragment">
-      <img src="assets/figures/fig2a-training.png" alt="Standard training: each response gets a next-turn reward from a preference dataset">
-      <figcaption>RLHF: each reply is rated on its own</figcaption>
+  <figure data-id="fig-rlhf">
+    <img src="assets/figures/fig2a-training-crop.png" alt="Standard training: each response gets a next-turn reward from a preference dataset">
+    <figcaption>RLHF: each reply is rated on its own</figcaption>
   </figure>
-  <figure class="fragment">
-      <img src="assets/figures/fig2b-training.png" alt="CollabLLM training: the current model turn is rewarded by simulating future turns">
-      <figcaption>CollabLLM: each reply is rated by the turns it leads to</figcaption>
-  </figure>
-  <p class="source">Fig. 2 (training panels), p. 2; Sec. 1 &amp; 3, p. 1&ndash;3</p>
+  <p class="source">Fig. 2 (training panels), p. 2</p>
   <aside class="notes">
-    The reason is how models are trained. Click: here is standard RLHF: we take a context x and
+    The reason is how models are trained. Here is standard RLHF. We take a context x and
     a response y, rate the response at the next turn with thumbs up or down, and train the
-    policy on these single-turn rewards. Under that signal, a clarifying question looks worse
-    than a full answer, because it doesn't give the user anything yet.
-    The paper's point is that summing good single-turn rewards does not guarantee a good
-    conversation overall.
-    Click: CollabLLM changes the reward. It takes the current model turn, simulates the future
+    policy on these single-turn rewards.
+  </aside>
+</section>
+
+<section id="motivation-3" data-auto-animate>
+  <h2>Why does this happen, and how do the authors fix it?</h2>
+  <div class="cols">
+    <figure data-id="fig-rlhf">
+      <img src="assets/figures/fig2a-training-crop.png" alt="Standard training: each response gets a next-turn reward from a preference dataset">
+      <figcaption>RLHF: each reply is rated on its own</figcaption>
+    </figure>
+    <div></div>
+  </div>
+  <div class="cols">
+    <div class="turns fragment" data-id="turns-rlhf">
+      <div class="turn u">u&#8321;</div>
+      <div class="turn now">m&#8321;</div>
+      <div class="turn u">u&#8322;</div>
+      <div class="turn now">m&#8322;</div>
+    </div>
+    <div></div>
+  </div>
+  <div class="cols">
+    <div data-id="eq-rlhf">
+      <div class="equation fragment">$\sum_j R(m_j \mid t^h_j) \not\Rightarrow R^*(t \mid g)$</div>
+    </div>
+    <div></div>
+  </div>
+  <p class="source">Fig. 2 (training panels), p. 2; Sec. 2, p. 2; Sec. 3 &ldquo;Key Motivations&rdquo;, p. 3</p>
+  <aside class="notes">
+    Click: in a conversation, the user has an implicit goal g, and each turn is a user input u
+    and a model response m. Under RLHF every model response is scored on its own, right after it
+    is written. Under that signal, a clarifying question looks worse than a full answer,
+    because it doesn't give the user anything yet.
+    Click: the paper's key motivation. Summing good single-turn rewards over the K turns does
+    not guarantee a high conversation-level reward R star given the goal g. An article written
+    section by section can look helpful at every turn and still lack coherence at the end.
+  </aside>
+</section>
+
+<section id="motivation-4" data-auto-animate>
+  <h2>Why does this happen, and how do the authors fix it?</h2>
+  <figure data-id="fig-collab">
+    <img src="assets/figures/fig2b-training-crop.png" alt="CollabLLM training: the current model turn is rewarded by simulating future turns">
+    <figcaption>CollabLLM: each reply is rated by the turns it leads to</figcaption>
+  </figure>
+  <p class="source">Fig. 2 (training panels), p. 2</p>
+  <aside class="notes">
+    CollabLLM changes the reward. It takes the current model turn, simulates the future
     turns with a user simulator, and scores the response by where the conversation ends up.
-    This is called the Multiturn-aware Reward, and the model is fine-tuned on it with RL.
+  </aside>
+</section>
+
+<section id="motivation-5" data-auto-animate>
+  <h2>Why does this happen, and how do the authors fix it?</h2>
+  <div class="cols">
+    <figure data-id="fig-rlhf">
+      <img src="assets/figures/fig2a-training-crop.png" alt="Standard training: each response gets a next-turn reward from a preference dataset">
+      <figcaption>RLHF: each reply is rated on its own</figcaption>
+    </figure>
+    <figure data-id="fig-collab">
+      <img src="assets/figures/fig2b-training-crop.png" alt="CollabLLM training: the current model turn is rewarded by simulating future turns">
+      <figcaption>CollabLLM: each reply is rated by the turns it leads to</figcaption>
+    </figure>
+  </div>
+  <div class="cols">
+    <div class="turns" data-id="turns-rlhf">
+      <div class="turn u">u&#8321;</div>
+      <div class="turn now">m&#8321;</div>
+      <div class="turn u">u&#8322;</div>
+      <div class="turn now">m&#8322;</div>
+    </div>
+    <div class="turns fragment" data-id="turns-collab">
+      <div class="turn u past">u&#8321;</div>
+      <div class="turn now">m&#8321;</div>
+      <div class="turn u ahead">u&#8322;</div>
+      <div class="turn ahead">m&#8322;</div>
+    </div>
+  </div>
+  <div class="cols">
+    <div data-id="eq-rlhf">
+      <div class="equation">$\sum_j R(m_j \mid t^h_j) \not\Rightarrow R^*(t \mid g)$</div>
+    </div>
+    <div data-id="eq-collab">
+      <div class="equation fragment">$\mathrm{MR}(m_j \mid t^h_j, g) = \mathbb{E}\, R^*(t \mid g)$</div>
+    </div>
+  </div>
+  <p class="source">Fig. 2 (training panels), p. 2; Sec. 2, p. 2; Sec. 3 &ldquo;Key Motivations&rdquo; and Eq. 1, p. 3</p>
+  <aside class="notes">
+    Side by side with RLHF now.
+    Click: the response m1 is judged by the turns after it, the forward trajectory, which the
+    user simulator plays out.
+    Click: this is the Multiturn-aware Reward, MR: the expected conversation-level reward over
+    the simulated future turns. The model is fine-tuned on it with RL.
     Yash will now show how this reward is defined and computed.
   </aside>
 </section>

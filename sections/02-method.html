@@ -1,4 +1,279 @@
 <section id="method-1">
-  <h2>Placeholder</h2>
-  <p>Run <code>/draft 02-method</code> to fill this section.</p>
+  <h2>Multiturn-aware Reward (MR)</h2>
+  <div class="equation r-stack">
+    <div class="fragment fade-out" data-fragment-index="0">$$\mathrm{MR}(m_j \mid t^h_j, g) = \mathbb{E}_{t^f_j \sim P(t^f_j \mid t_{1:j})}\, R^*(t_{1:j} \cup t^f_j \mid g)$$</div>
+    <div class="fragment fade-in-then-out" data-fragment-index="0">$${\color{#f97316} \mathrm{MR}}(m_j \mid t^h_j, g) = \mathbb{E}_{t^f_j \sim P(t^f_j \mid t_{1:j})}\, R^*(t_{1:j} \cup t^f_j \mid g)$$</div>
+    <div class="fragment fade-in-then-out" data-fragment-index="1">$$\mathrm{MR}(m_j \mid {\color{#f97316} t^h_j}, {\color{#f97316} g}) = \mathbb{E}_{t^f_j \sim P(t^f_j \mid t_{1:j})}\, R^*(t_{1:j} \cup t^f_j \mid g)$$</div>
+    <div class="fragment fade-in-then-out" data-fragment-index="2">$$\mathrm{MR}({\color{#f97316} m_j} \mid t^h_j, g) = \mathbb{E}_{t^f_j \sim P(t^f_j \mid t_{1:j})}\, R^*(t_{1:j} \cup t^f_j \mid g)$$</div>
+    <div class="fragment fade-in-then-out" data-fragment-index="3">$$\mathrm{MR}(m_j \mid t^h_j, g) = {\color{#f97316} \mathbb{E}}_{t^f_j \sim P(t^f_j \mid t_{1:j})}\, R^*(t_{1:j} \cup t^f_j \mid g)$$</div>
+    <div class="fragment fade-in-then-out" data-fragment-index="4">$$\mathrm{MR}(m_j \mid t^h_j, g) = \mathbb{E}_{{\color{#f97316} t^f_j \sim P(t^f_j \mid t_{1:j})}}\, R^*(t_{1:j} \cup {\color{#f97316} t^f_j} \mid g)$$</div>
+    <div class="fragment fade-in-then-out" data-fragment-index="5">$$\mathrm{MR}(m_j \mid t^h_j, g) = \mathbb{E}_{t^f_j \sim P(t^f_j \mid t_{1:j})}\, {\color{#f97316} R^*(t_{1:j} \cup t^f_j \mid g)}$$</div>
+    <div class="fragment fade-in-then-out" data-fragment-index="6">$$\mathrm{MR}(m_j \mid t^h_j, g) = \mathbb{E}_{t^f_j \sim P(t^f_j \mid t_{1:j})}\, {\color{#f97316} R^*}(t_{1:j} \cup t^f_j \mid g)$$</div>
+    <div class="fragment" data-fragment-index="7">$$\mathrm{MR}(m_j \mid t^h_j, g) = {\color{#f97316} \mathbb{E}}_{{\color{#f97316} t^f_j \sim P(t^f_j \mid t_{1:j})}}\, R^*(t_{1:j} \cup {\color{#f97316} t^f_j} \mid g)$$</div>
+  </div>
+  <div class="cols">
+    <ul class="terms">
+      <li class="fragment" data-fragment-index="0">$\mathrm{MR}$: the Multiturn-aware Reward</li>
+      <li class="fragment" data-fragment-index="1">given the history $t^h_j$ and goal $g$</li>
+      <li class="fragment" data-fragment-index="2">assesses the response $m_j$</li>
+    </ul>
+    <ul class="terms">
+      <li class="fragment" data-fragment-index="3">$\mathbb{E}$: the expected value</li>
+      <li class="fragment" data-fragment-index="4">over future turns $t^f_j = t_{j+1:K}$</li>
+      <li class="fragment" data-fragment-index="5">of $R^*$: a score of the whole conversation for goal $g$</li>
+    </ul>
+  </div>
+  <div class="cols">
+    <p class="fragment" data-fragment-index="6"><strong>Requirement 1:</strong> $R^*$ is not observed, so it must be approximated</p>
+    <p class="fragment" data-fragment-index="7"><strong>Requirement 2:</strong> future turns must be simulated, and full rollouts are expensive</p>
+  </div>
+  <p class="source">Sec. 2, p. 2; Sec. 3.1, Eq. 1, p. 3; Sec. 3.1.2, p. 4</p>
+  <aside class="notes">
+    Let's make this precise. This is Equation 1 of the paper. Let's read it piece by piece.
+    Click: MR, the Multiturn-aware Reward.
+    Click: it is computed given the history t h j, meaning all previous turns plus the current
+    user input u j, and the user's implicit goal g.
+    Click: what it assesses is the model's response m j.
+    Click: it is an expected value,
+    Click: over the future turns t f j, the turns that come after the response. We don't have
+    them, so we sample them with a user simulator.
+    Click: and what we take the expectation of is R star, a score of the whole multiturn
+    conversation, history, response and future, against the user's final goal g.
+    The authors frame this as causal effect estimation: the response is an intervention, and MR
+    measures its effect on how the conversation ends. But we can't compute it directly.
+    Click: first requirement: we never observe R star itself, so the paper has to approximate
+    it with rewards it can measure. That's the next slide.
+    Click: second requirement: we don't have the future turns. They must be simulated, and rolling
+    every conversation out to the very end would be too expensive. The slide after that shows
+    how the paper limits this.
+  </aside>
+</section>
+
+<section id="method-2">
+  <h2>Approximation of MR: Conversation-level reward</h2>
+  <div class="equation r-stack">
+    <div class="fragment fade-out" data-fragment-index="0">$$R^*(t \mid g) \simeq R_{\text{ext}}(t, g) + R_{\text{int}}(t)$$</div>
+    <div class="fragment fade-in-then-out" data-fragment-index="0">$$R^*(t \mid g) \simeq {\color{#f97316} R_{\text{ext}}(t, g)} + R_{\text{int}}(t)$$</div>
+    <div class="fragment" data-fragment-index="1">$$R^*(t \mid g) \simeq R_{\text{ext}}(t, g) + {\color{#f97316} R_{\text{int}}(t)}$$</div>
+  </div>
+  <div class="cards">
+    <div class="card fragment fade-up" data-fragment-index="0">
+      <span class="icon">&#10003;</span>
+      <h3>Task success</h3>
+      <p>$R_{\text{ext}} = S(\mathrm{Extract}(t), y_g)$: BLEU, pass rate or accuracy against the reference</p>
+    </div>
+    <div class="card fragment fade-up" data-fragment-index="1">
+      <span class="icon">&#9201;&#xFE0E;</span>
+      <h3>Efficiency</h3>
+      <p>$-\min[\lambda\,\mathrm{TokenCount}(t), 1]$: fewer tokens to read and write</p>
+    </div>
+    <div class="card fragment fade-up" data-fragment-index="2">
+      <span class="icon">&#8644;</span>
+      <h3>Interactivity</h3>
+      <p>$R_{\text{LLM}}(t) \in [0, 1]$: an LLM judge rates engagement</p>
+    </div>
+  </div>
+  <p class="source">Sec. 3.1.1, Eq. 2&ndash;4, p. 3</p>
+  <aside class="notes">
+    First ingredient: the conversation-level reward R star. The paper approximates it as an
+    extrinsic plus an intrinsic reward.
+    Click: the extrinsic reward is task success. Extract pulls the final solution out of the
+    conversation, here the document, the code or the answer, and a task metric S compares it to
+    the reference y g: BLEU for documents, pass rate for code, accuracy for math.
+    Click: the intrinsic reward has two parts. The first is efficiency: a penalty on the number
+    of tokens the user has to read and write, scaled by lambda and capped at 1. Lambda is 1e-4
+    for documents and 5e-4 for code and math.
+    Click: the second is interactivity: an LLM judge gives a score between 0 and 1 for how
+    engaging the conversation was.
+    So a model can't just ask endless questions: that costs tokens and doesn't solve the task.
+  </aside>
+</section>
+
+<section id="method-3" data-auto-animate>
+  <h2>Forward sampling</h2>
+  <div class="cols wide-right">
+    <div>
+      <p class="turns-note">&nbsp;<br>&nbsp;</p>
+      <div class="turns">
+        <div class="turn past" data-id="h">$t_{1:j-1}$</div>
+        <div class="turn u" data-id="uj">$u_j$</div>
+      </div>
+    </div>
+    <div>
+      <div class="turns">
+        <div class="turn now fragment" data-fragment-index="0" data-id="a-m">$m^{(1)}_j$</div>
+        <div class="turn u ahead fragment" data-fragment-index="1" data-id="a-u1">$u_{j+1}$</div>
+        <div class="turn ahead fragment" data-fragment-index="2" data-id="a-m1">$m_{j+1}$</div>
+        <div class="turn u ahead fragment" data-fragment-index="3" data-id="a-u2">$u_{j+2}$</div>
+        <div class="turn ahead fragment" data-fragment-index="4" data-id="a-m2">$m_{j+2}$</div>
+        <div class="turn fragment" data-fragment-index="5" data-id="a-r">3.2</div>
+      </div>
+      <div class="turns">
+        <div class="turn now fragment" data-fragment-index="6" data-id="b-m">$m^{(2)}_j$</div>
+        <div class="turn u ahead fragment" data-fragment-index="6" data-id="b-u1">$u_{j+1}$</div>
+        <div class="turn ahead fragment" data-fragment-index="6" data-id="b-m1">$m_{j+1}$</div>
+        <div class="turn u ahead fragment" data-fragment-index="6" data-id="b-u2">$u_{j+2}$</div>
+        <div class="turn ahead fragment" data-fragment-index="6" data-id="b-m2">$m_{j+2}$</div>
+        <div class="turn fragment" data-fragment-index="6" data-id="b-r">2.7</div>
+      </div>
+    </div>
+  </div>
+  <p class="turns-note" data-id="note">$w = 2$: a user simulator plays the future turns, and each response gets its MR</p>
+  <p class="source">Sec. 3.1.2 &amp; 3.2, p. 4; App. B.1, Fig. 8 (MR values), p. 14&ndash;15</p>
+  <aside class="notes">
+    Second requirement: sampling the future. Rolling every conversation out to the end is too
+    expensive, so the paper caps the lookahead with a window size w. Here w is 2, the setting
+    used in all main results.
+    We start from the history, in grey, and the current user turn u j.
+    Click: the model proposes a candidate response m j, in orange.
+    Click, click, click, click: a user simulator, an LLM role-playing the user with the hidden
+    goal g, plays the next user turn, the model answers, the user replies again, the model
+    answers again. That's the window of two future turns.
+    Click: we score this rollout with the conversation-level reward and get its MR. In the
+    paper's Figure 8 example it's 3.2. In practice the future is sampled 3 times per response
+    and the rewards are averaged.
+    Click: a second candidate response from the same history goes through the same process and
+    gets 2.7.
+  </aside>
+</section>
+
+<section id="method-4" data-auto-animate>
+  <h2>Forward sampling</h2>
+  <div class="cols wide-right">
+    <div>
+      <p class="turns-note">&nbsp;<br>&nbsp;</p>
+      <div class="turns">
+        <div class="turn past" data-id="h">$t_{1:j-1}$</div>
+        <div class="turn u" data-id="uj">$u_j$</div>
+      </div>
+    </div>
+    <div>
+      <div class="turns">
+        <div class="turn now" data-id="a-m">$m^{(1)}_j$</div>
+        <div class="turn u ahead" data-id="a-u1">$u_{j+1}$</div>
+        <div class="turn ahead" data-id="a-m1">$m_{j+1}$</div>
+        <div class="turn u ahead" data-id="a-u2">$u_{j+2}$</div>
+        <div class="turn ahead" data-id="a-m2">$m_{j+2}$</div>
+        <div class="turn" data-id="a-r">3.2</div>
+      </div>
+      <div class="turns">
+        <div class="turn past" data-id="b-m">$m^{(2)}_j$</div>
+        <div class="turn u past" data-id="b-u1">$u_{j+1}$</div>
+        <div class="turn past" data-id="b-m1">$m_{j+1}$</div>
+        <div class="turn u past" data-id="b-u2">$u_{j+2}$</div>
+        <div class="turn past" data-id="b-m2">$m_{j+2}$</div>
+        <div class="turn past" data-id="b-r">2.7</div>
+      </div>
+    </div>
+  </div>
+  <p class="turns-note" data-id="note">SFT: keep the branch with the highest MR, discard the rest</p>
+  <p class="source">Sec. 3.1.2 &amp; 3.2, p. 4; App. B.1, Fig. 8 (MR values), p. 14&ndash;15</p>
+  <aside class="notes">
+    How do we turn this into training data? For SFT, we keep the response with the highest MR,
+    3.2, and the other branch is discarded. The model learns to imitate the best response.
+    Note there's no learned reward model here: MR comes straight from simulation and metrics.
+  </aside>
+</section>
+
+<section id="method-5" data-auto-animate>
+  <h2>Forward sampling</h2>
+  <div class="cols wide-right">
+    <div>
+      <p class="turns-note">&nbsp;<br>&nbsp;</p>
+      <div class="turns">
+        <div class="turn past" data-id="h">$t_{1:j-1}$</div>
+        <div class="turn u" data-id="uj">$u_j$</div>
+      </div>
+    </div>
+    <div>
+      <div class="turns">
+        <div class="turn now" data-id="a-m">$m^{(1)}_j$</div>
+        <div class="turn u ahead" data-id="a-u1">$u_{j+1}$</div>
+        <div class="turn ahead" data-id="a-m1">$m_{j+1}$</div>
+        <div class="turn u ahead" data-id="a-u2">$u_{j+2}$</div>
+        <div class="turn ahead" data-id="a-m2">$m_{j+2}$</div>
+        <div class="turn" data-id="a-r">3.2 &#10003;&#xFE0E;</div>
+      </div>
+      <div class="turns">
+        <div class="turn now" data-id="b-m">$m^{(2)}_j$</div>
+        <div class="turn u ahead" data-id="b-u1">$u_{j+1}$</div>
+        <div class="turn ahead" data-id="b-m1">$m_{j+1}$</div>
+        <div class="turn u ahead" data-id="b-u2">$u_{j+2}$</div>
+        <div class="turn ahead" data-id="b-m2">$m_{j+2}$</div>
+        <div class="turn" data-id="b-r">2.7 &#10007;&#xFE0E;</div>
+      </div>
+    </div>
+  </div>
+  <p class="turns-note" data-id="note">DPO: keep both, higher MR is chosen &#10003;&#xFE0E;, lower MR is rejected &#10007;&#xFE0E;</p>
+  <p class="source">Sec. 3.1.2 &amp; 3.2, p. 4; App. B.1, Fig. 8 (MR values), p. 14&ndash;15</p>
+  <aside class="notes">
+    For DPO we keep both branches. The higher-MR response is the chosen one, the lower-MR
+    response is rejected, and the model learns to prefer the first over the second.
+  </aside>
+</section>
+
+<section id="method-6" data-auto-animate>
+  <h2>Forward sampling</h2>
+  <div class="cols wide-right">
+    <div>
+      <p class="turns-note">&nbsp;<br>&nbsp;</p>
+      <div class="turns">
+        <div class="turn past" data-id="h">$t_{1:j-1}$</div>
+        <div class="turn u past" data-id="uj">$u_j$</div>
+        <div class="turn past" data-id="a-m">$m^{(1)}_j$</div>
+        <div class="turn u" data-id="a-u1">$u_{j+1}$</div>
+      </div>
+    </div>
+    <div></div>
+  </div>
+  <p class="turns-note" data-id="note">The chosen response and the next user turn join the shared history</p>
+  <p class="source">Sec. 3.1.2 &amp; 3.2, p. 4; App. B.1, Fig. 8 (MR values), p. 14&ndash;15</p>
+  <aside class="notes">
+    Then the conversation continues from the chosen response. It joins the shared history, and
+    the next user turn is taken from the chosen response's own simulated future.
+  </aside>
+</section>
+
+<section id="method-7" data-auto-animate>
+  <h2>Forward sampling</h2>
+  <div class="cols wide-right">
+    <div>
+      <p class="turns-note">&nbsp;<br>&nbsp;</p>
+      <div class="turns">
+        <div class="turn past" data-id="h">$t_{1:j}$</div>
+        <div class="turn u" data-id="a-u1">$u_{j+1}$</div>
+      </div>
+    </div>
+    <div>
+      <div class="turns">
+        <div class="turn now" data-id="c-m">$m^{(1)}_{j+1}$</div>
+        <div class="turn u ahead fragment" data-fragment-index="0" data-id="c-u1">$u_{j+2}$</div>
+        <div class="turn ahead fragment" data-fragment-index="0" data-id="c-m1">$m_{j+2}$</div>
+        <div class="turn u ahead fragment" data-fragment-index="0" data-id="c-u2">$u_{j+3}$</div>
+        <div class="turn ahead fragment" data-fragment-index="0" data-id="c-m2">$m_{j+3}$</div>
+        <div class="turn fragment" data-fragment-index="2" data-id="c-r">4.5</div>
+      </div>
+      <div class="turns">
+        <div class="turn now" data-id="d-m">$m^{(2)}_{j+1}$</div>
+        <div class="turn u ahead fragment" data-fragment-index="1" data-id="d-u1">$u_{j+2}$</div>
+        <div class="turn ahead fragment" data-fragment-index="1" data-id="d-m1">$m_{j+2}$</div>
+        <div class="turn u ahead fragment" data-fragment-index="1" data-id="d-u2">$u_{j+3}$</div>
+        <div class="turn ahead fragment" data-fragment-index="1" data-id="d-m2">$m_{j+3}$</div>
+        <div class="turn fragment" data-fragment-index="2" data-id="d-r">1.7</div>
+      </div>
+    </div>
+  </div>
+  <p class="turns-note" data-id="note">From the new history, new candidates are rolled out</p>
+  <p class="source">Sec. 3.1.2 &amp; 3.2, p. 4; App. B.1, Fig. 8 (MR values), p. 14&ndash;15</p>
+  <aside class="notes">
+    The history is now t 1 to j, and the current user turn is u j plus 1. From here we sample
+    new candidate responses and roll each one out again.
+    Click: first candidate. Click: second candidate. Click: their MRs, 4.5 and 1.7 in Figure 8,
+    so this time the first one is chosen and the second rejected. And so on, turn by turn.
+    This data is built offline for SFT and Offline DPO, with GPT-4o-mini as the user and GPT-4o
+    as the assistant. PPO and Online DPO run the same loop online: the model being trained
+    proposes the candidates itself, and MR is computed on its own responses. PPO starts from
+    SFT, Online DPO from Offline DPO, all on Llama-3.1-8B-Instruct with LoRA.
+    Elgun will now show how these models perform.
+  </aside>
 </section>
