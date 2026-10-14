@@ -2,9 +2,9 @@
   <h2>Later papers already target three of CollabLLM's open problems</h2>
   <table>
     <tr><th>Open problem</th><th>Later paper</th><th>How</th></tr>
-    <tr class="fragment"><td>Simulators are easier than real users</td><td>UserLM-8b</td><td>Trained on real chats</td></tr>
+    <tr class="fragment"><td>Simulators are easier than real users</td><td>UserLM-8b</td><td>Trained on real chats:<br>GPT-4o 74.6 &rarr; 57.4</td></tr>
     <tr class="fragment"><td>Asks on 27.7% of clear questions</td><td>PPP</td><td>Reward counts the user's effort</td></tr>
-    <tr class="fragment"><td>Tested on its own simulator</td><td>Lost in Conversation</td><td>Another team's benchmark</td></tr>
+    <tr class="fragment"><td>Tested on its own simulator</td><td>Lost in Conversation</td><td>Another team's:<br>15 LLMs lose 39%</td></tr>
   </table>
   <p class="source">App. F.2, p. 24; Table 2, p. 7 &middot; UserLM-8b (Naous et al., 2025) &middot; PPP (Sun et al., 2025) &middot; Lost in Conversation (Laban et al., 2026)</p>
   <aside class="notes">
@@ -34,12 +34,13 @@
     </div>
   </div>
   <ul>
-    <li class="fragment">"+17.6% satisfaction" matches the "very good" gap, 56.9% vs 39.3%; the mean rose 4.2%</li>
+    <li class="fragment">"+17.6% satisfaction" is the gap in "very good" ratings (56.9% vs 39.3%); mean +4.2%</li>
   </ul>
   <p class="source">Table 1, p. 6; App. D.4, p. 20; Fig. 7 and Sec. 6, p. 7&ndash;8; IJCAI-26 extended abstract (Wu et al., 2026)</p>
   <aside class="notes">
     Two headline numbers deserve a closer look. The judge scores interactivity from 1 to 3, and
-    since every method scores above 2.5, Appendix D.4 rescales it as 2 times S minus 2.5. Left:
+    since every method scores above 2.5, Appendix D.4 applies a rescaling that maps 2.5 to 0 and
+    3 to 1. Left:
     the scores as reported. Click: the same scores on the judge's own scale. CollabLLM gains 0.15,
     0.09 and 0.07 points over Proactive Base. The authors' IJCAI-26 version also corrects the
     headline from 46.3 to 44.3%. Click: "+17.6% satisfaction" matches the gap in "very good"
@@ -52,8 +53,8 @@
   <div class="cards">
     <div class="card fragment fade-up">
       <span class="icon">1</span>
-      <h3>Eval prompts CollabLLM, not Base</h3>
-      <p><strong>We test prompt and LoRA adapter (trained add-on) apart.</strong></p>
+      <h3>Only CollabLLM gets the prompt</h3>
+      <p><strong>We test the prompt and the trained adapter separately.</strong></p>
     </div>
     <div class="card fragment fade-up">
       <span class="icon">2</span>
@@ -112,7 +113,7 @@
 </section>
 
 <section id="ablations-5">
-  <h2>CollabLLM loses just as much: every assistant drops 27 to 34 points</h2>
+  <h2>The adapter alone doesn't reduce the drop: every assistant loses 27 to 34 points</h2>
   <div class="chart short">
     <canvas data-chart='{"type":"bar","labels":["Whole","Split"],"axis":"Correct (%) ↑","min":0,"max":100,"decimals":1,
       "series":[{"name":"Base","role":"base2","data":[76.7,42.9]},
@@ -125,16 +126,17 @@
   </div>
   <ul>
     <li>2 &times; 2 design: CollabLLM's LoRA adapter on or off, its system prompt on or off</li>
-    <li class="fragment">Drop vs Base: CollabLLM &minus;1.5 [&minus;8.3, 5.4]; CollabLLM + prompt &minus;7.0 [&minus;13.9, &minus;0.1], suggestive</li>
+    <li class="fragment">Smaller drop than Base: CollabLLM 1.5 points [&minus;5.4, 8.3]; CollabLLM + prompt 7.0 [0.1, 13.9], suggestive</li>
   </ul>
   <p class="source">Our runs: Lost in Conversation, 103 GSM8K problems</p>
   <aside class="notes">
     Now all four assistants. The design is 2 by 2: CollabLLM's LoRA adapter on or off, crossed
     with its system prompt on or off. Base first: 76.7 whole, 42.9 split. Click: CollabLLM, the
     adapter alone, drops just as much, 32 points. Click: Base with the prompt drops 30. Click:
-    CollabLLM with the prompt drops 27, the least. Click: compared with Base, CollabLLM's drop
-    differs by minus 1.5 points, interval minus 8.3 to plus 5.4. Adapter plus prompt is minus 7.0,
-    an interval that only just excludes zero, and one of three comparisons: suggestive.
+    CollabLLM with the prompt drops 27, the least. Click: compared with Base, CollabLLM's drop is
+    1.5 points smaller, interval minus 5.4 to 8.3. CollabLLM plus prompt's is 7.0 smaller,
+    interval 0.1 to 13.9: it only just excludes zero and is one of three comparisons, so it is
+    suggestive.
   </aside>
 </section>
 
@@ -152,7 +154,9 @@
     What changes inside these conversations? Without the prompt, Base and CollabLLM behave alike:
     7 to 8% of turns ask a question, and they attempt about 2.5 answers per conversation. The
     adapter shifts the turn shares by under 2 points. It also lifts final-answer accuracy a
-    little, from 36.9 to 41.2%. Click: CollabLLM's system prompt does much more. Over a third of
+    little, from 36.9 to 41.2%. That column counts answers given after the last piece; the
+    previous slide counted conversations, which also include lucky early guesses. That is why
+    Base shows 36.9 here and 42.9 there. Click: CollabLLM's system prompt does much more. Over a third of
     turns ask, about 1.6 answers per conversation, and final-answer accuracy reaches 50.0%
     without the adapter and 52.3% with it. These are descriptive shares, without confidence
     intervals.
@@ -160,11 +164,11 @@
 </section>
 
 <section id="ablations-7">
-  <h2>The adapter learned CollabLLM's preferences, but it is a 0.06% weight change that barely changes behaviour here</h2>
+  <h2>The adapter learned CollabLLM's preferences but barely changes behaviour</h2>
   <div class="stats">
-    <div class="stat"><span class="num count">0.06%</span><span class="label">median weight change from the adapter</span></div>
-    <div class="stat fragment"><span class="num count">72%</span><span class="label">of 300 training pairs have a DPO margin above 0: the adapter favours the chosen reply more than Base does</span></div>
-    <div class="stat fragment"><span class="num count">under 2</span><span class="label">points of shift from the adapter in asking and premature answers</span></div>
+    <div class="stat"><span class="num count">0.06%</span><span class="label">median change to each weight matrix</span></div>
+    <div class="stat fragment"><span class="num count">72%</span><span class="label">of 300 pairs from CollabLLM's released data: the adapter favours the chosen reply more than Base does</span></div>
+    <div class="stat fragment"><span class="num count">+0.7</span><span class="label">points more turns that ask with the adapter (7.3% &rarr; 8.0%)</span></div>
   </div>
   <p class="source">Our analysis of CollabLLM's released math adapter and training data; Our runs: Lost in Conversation, 103 GSM8K problems</p>
   <aside class="notes">
@@ -173,16 +177,17 @@
     around 1e-4. Click: yet it learned. On 300 pairs from CollabLLM's released data, its DPO
     margin, how much more it favours the chosen reply than Base does, is above zero for 72%: mean
     plus 3.71 nats, interval 3.05 to 4.38. We can't confirm these were its exact training pairs.
-    Click: but in Lost in Conversation it moves asking and premature answers by under 2 points.
+    Click: but in Lost in Conversation it adds only 0.7 points of turns that ask, from 7.3 to
+    8.0%, and premature answers move by 1.4 points.
   </aside>
 </section>
 
 <section id="ablations-8">
   <h2>60% of training pairs are decided by style alone, and their labels are the noisiest</h2>
   <div class="stats">
-    <div class="stat"><span class="num count">60%</span><span class="label">of pairs are equally correct: style and length decide (40% differ in correctness)</span></div>
-    <div class="stat fragment"><span class="num count">18%</span><span class="label">label flip chance from simulation noise (12% when correctness differs)</span></div>
-    <div class="stat fragment"><span class="num count">46%</span><span class="label">gap within one standard error, the 3-session noise level (32% when correctness differs)</span></div>
+    <div class="stat"><span class="num count">60%</span><span class="label">of pairs have two equally correct replies, so style and length decide (40% differ in correctness)</span></div>
+    <div class="stat fragment"><span class="num count">18%</span><span class="label">chance that rerunning the 3 simulations flips such a label (12% when correctness differs)</span></div>
+    <div class="stat fragment"><span class="num count">46%</span><span class="label">of such pairs differ by less than one standard error (32% when correctness differs)</span></div>
   </div>
   <p class="source">Our analysis of CollabLLM's released training data</p>
   <aside class="notes">
@@ -197,7 +202,8 @@
 </section>
 
 <section id="ablations-9" class="statement band">
-  <h2>In our test, collaboration came from the prompt, and the training signal was noisy</h2>
+  <h2>In our test, CollabLLM's collaboration came from its prompt, not its training</h2>
+  <p class="lead">Its training labels are noisiest exactly where they teach collaboration.</p>
   <p class="lead">Next: Found in Conversation (2026, CollabLLM's first author) keeps &ge;92% of single-turn performance with self-distillation.</p>
   <p class="source">Found in Conversation (Chen, Wu and Leskovec, 2026)</p>
   <aside class="notes">

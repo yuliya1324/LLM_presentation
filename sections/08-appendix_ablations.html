@@ -75,7 +75,7 @@
   <div class="equation">$\text{DPO margin} = \log \dfrac{\pi_{\text{CollabLLM}}(y^+)}{\pi_{\text{Base}}(y^+)} - \log \dfrac{\pi_{\text{CollabLLM}}(y^-)}{\pi_{\text{Base}}(y^-)}$</div>
   <div class="equation">$\text{flip chance} = \Phi(-\text{gap} / \text{SE}), \qquad \text{SE} = \sqrt{(\sigma_+^2 + \sigma_-^2) / 2}$</div>
   <ul class="terms">
-    <li>$y^+, y^-$: chosen and rejected reply; $\sigma_\pm$: SD of their 3 session scores</li>
+    <li>$y^+, y^-$: chosen and rejected reply; $\sigma_\pm$: population SD of their 3 session scores, so SE is the standard error of the difference of two 3-session means</li>
   </ul>
   <p class="source">Our analysis of CollabLLM's released math adapter and training data</p>
   <aside class="notes">
