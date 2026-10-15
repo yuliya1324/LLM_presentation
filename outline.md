@@ -9,11 +9,11 @@ Talk: 20 min, about 22 slides
 | sections/00-title.html | Iuliia | 1 | Title |
 | sections/01-motivation.html | Iuliia | 2 | Problem, why it matters, what authors propose |
 | sections/02-method.html | Iuliia | 3 | Method, key idea, architecture |
-| sections/03-results.html | Elgun | 6 | Setup, main results, ablations, user study, takeaways |
+| sections/03-results.html | Elgun | 6 | Setup, task scores, efficiency and interactivity, user study, generalization, safety |
 | sections/04-ablations.html | Yash | 9 | Limitations, follow-up work and our own tests |
 | sections/05-harness.html | Iuliia | 1 | How we built harness for these slides |
 | sections/06-appendix_title.html | Iuliia | 1 | Appendix title |
-| sections/07-appendix_results.html | Elgun | 1 | Appendix for results |
+| sections/07-appendix_results.html | Elgun | 1 | Paper reward ablation and forward-window trade-off (Q&A) |
 | sections/08-appendix_ablations.html | Yash | 10 | Backup for our tests |
 | sections/09-appendix_harness.html | Iuliia | 2 | Appendix for harness |
 
@@ -35,7 +35,16 @@ Layout and source in brackets are only suggestions. Facts are in `sources/notes/
 - method-3: Optimization & Synthetic Datasets. How the dataset is constructed  -- you can use Appendix graphs for animated visualisations. What methods they use: SFT, PPO, offline DPO, online DPO.
 
 ### 03-results (Elgun)
-- results-1: 
+About 6 minutes: 55 / 70 / 60 / 65 / 60 / 50 seconds. Speaker notes are in English.
+Summary: report the paper's evidence, from simulated tasks to real users, transfer and safety. Keep the method in Iuliia's section and our own experiments and detailed critique in Yash's section.
+- results-1: Three tasks test collaboration over several turns [STATS, band; 100 MediumDocEdit-Chat articles / BLEU, 600 BigCodeBench-Chat problems / pass rate, 200 level-5 MATH-Chat problems / accuracy; same Llama-3.1-8B-Instruct family, GPT-4o-mini user simulator; Sec. 4, p. 4–5]
+- results-2: Every trained variant improves task scores over both baselines [FIGURE; original Table 1 cropped to all six model rows, leaving out Rel. Improv.; PPO leads writing and coding, Online DPO leads math; retain ITR ×100 as in the source; p. 6]
+- results-3: Online DPO uses fewer tokens and is more interactive [TWO COLUMNS, charts; Proactive Base vs Online DPO across Doc / Code / Math; tokens in thousands, ITR on 0–1 scale; use exact task-level values instead of the disputed headline percentage; Table 1, p. 6]
+- results-4: Real users give higher ratings and spend less time [FIGURE; original Fig. 7 panels a–c, with model order stated; 201 participants, document ratings 8.16 / 8.38 / 8.50, interaction ratings 8.11 / 8.46 / 8.60, times 1237 / 1319 / 1108 seconds; −10.4% vs Base; p. 7–8]
+- results-5: Clarification transfers to QA, with more unnecessary questions [BAR CHART; GPT-4o / Base / CollabLLM correct actions on ambiguous and clear questions; coding-trained Online DPO, zero-shot Abg-CoQA; Table 2, p. 7; action choice is not answer correctness]
+- results-6: Both models pass 99.7% of safety checks [FIGURE, band; original Table 8; 80 adversarial queries × 4 evaluators = 320 checks per model, 319 pass for each; no detected degradation in this limited test, no claim of general safety superiority; App. C, p. 16–17; hand over to Yash]
+
+Use only existing template layouts. Original paper crops retain the data and labels; detailed explanations and caveats belong in speaker notes. No edits to other presenters' sections or the shared template.
 
 ### 04-ablations (Yash)
 About 6 minutes: 9 slides of about 40 s. Part 1 (ablations-1 to -3): what the paper leaves open and who is fixing it. Part 2 (ablations-4 to -9): our own test.
@@ -64,6 +73,10 @@ Rules for this section:
 
 ### 06-appendix_title (Iuliia)
 - appendix_title-1: One word on a slide "Appendix"
+
+### 07-appendix_results (Elgun)
+One backup slide for Q&A, outside the six-minute section.
+- appendix_results-1: Two forward turns balance gains and sampling cost [FIGURE; original Fig. 4, p. 6; MR w=2 gives BLEU 0.373 / 1.85k tokens / ITR 0.70; w=3 gives 0.373 / 1.84k / 0.68; Table 7, p. 15 for sampling cost; distinguish these paper ablations from Yash's own tests, and note the Fig. 4 vs Fig. 9 discrepancy in speaker notes]
 
 ### 08-appendix_ablations (Yash)
 Backup slides for questions, not presented. Same rules as 04.

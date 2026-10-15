@@ -1,0 +1,19 @@
+<section id="appendix_results-1">
+  <h2>Two forward turns balance gains and sampling cost</h2>
+  <figure>
+    <img src="assets/figures/fig4.png" alt="Original Figure 4: reward ablation on document editing. MR with windows 1, 2 and 3 gives BLEU 0.370, 0.373, 0.373; tokens 2.00, 1.85, 1.84 thousand; ITR 0.64, 0.70, 0.68">
+    <figcaption>Document editing &middot; immediate rewards versus MR with $w = 1, 2, 3$</figcaption>
+  </figure>
+  <p class="lead">$w = 2$: BLEU 0.373 &middot; 1.85k tokens &middot; ITR 0.70</p>
+  <p class="source">Fig. 4, p. 6; Table 7, p. 15; full ablation: Fig. 9, p. 16</p>
+  <aside class="notes">
+    This is the paper's reward ablation, separate from our own experiments. Figure 4 tests
+    document editing. With two forward turns, BLEU reaches 0.373, token use falls to 1.85
+    thousand, and interactivity reaches 0.70. Three turns leave BLEU unchanged, save only
+    0.01 thousand tokens and slightly reduce ITR. Table 7 also shows the added sampling
+    cost: policy time per forward sample rises from 15.84 to 21.72 seconds between two and
+    three turns. This supports the authors' choice of two turns for their main setup, rather
+    than a universal optimum. Figure 9 reports different immediate-reward values, so the
+    numbers on this slide come specifically from Figure 4.
+  </aside>
+</section>
