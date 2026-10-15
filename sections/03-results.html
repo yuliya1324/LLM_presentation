@@ -1,4 +1,131 @@
-<section id="results-1">
-  <h2>Placeholder</h2>
-  <p>Run <code>/draft 03-results</code> to fill this section.</p>
+<section id="results-1" class="band">
+  <h2>Three tasks test collaboration over several turns</h2>
+  <p class="lead">Llama-3.1-8B-Instruct &middot; GPT-4o-mini user simulator</p>
+  <div class="stats">
+    <div class="stat fragment fade-up"><span class="num count">100</span><span class="label"><code>MediumDocEdit-Chat</code><br>Documents &middot; BLEU</span></div>
+    <div class="stat fragment fade-up"><span class="num count">600</span><span class="label"><code>BigCodeBench-Chat</code><br>Coding &middot; Pass rate</span></div>
+    <div class="stat fragment fade-up"><span class="num count">200</span><span class="label"><code>MATH-Chat</code><br>Math &middot; Accuracy</span></div>
+  </div>
+  <p class="source">Sec. 4, p. 4&ndash;5</p>
+  <aside class="notes">
+    Thanks, Iuliia. I will focus on the authors' experiments. They test the same 8B model
+    family in three settings. Click: document editing uses 100 Medium articles, with BLEU
+    measuring how closely the final document matches the reference. Click: coding uses
+    600 problems and the pass rate of the final code. Click: math uses 200 difficult,
+    level-five problems, with an LLM judge checking the final answer. GPT-4o-mini plays
+    the user and reveals the goal through a conversation. The comparisons are Base,
+    Proactive Base, which receives clarification instructions, and four CollabLLM variants.
+    These are simulated interactions. I will show the separate study with real people next.
+  </aside>
+</section>
+
+<section id="results-2">
+  <h2>Every trained variant improves task scores over both baselines</h2>
+  <figure>
+    <!-- sources/paper.pdf, p. 6, PDF-point crop (55,93)-(542,184), rendered at 288 dpi.
+         Original Table 1: all model rows retained; Rel. Improv. row omitted. -->
+    <img src="assets/figures/results-table1-models.png" alt="Original Table 1 model rows: Base, Proactive Base, SFT, PPO, Offline DPO and Online DPO, with task scores, tokens and interactivity on all three tasks">
+    <figcaption>ITR &times;100, as printed in Table 1</figcaption>
+  </figure>
+  <p class="lead fragment">PPO leads in writing and coding.<br><span class="accent">Online DPO leads in math.</span></p>
+  <p class="source">Table 1, p. 6 (model rows)</p>
+  <aside class="notes">
+    This is the original results table. The green rows are the two baselines, and the orange
+    rows are the trained variants. For now, look at BLEU, pass rate and accuracy. Proactive
+    prompting already helps, but each trained variant scores above both baselines on all
+    three task metrics. Click: there is no single winner across every column. PPO has the
+    highest writing score, 38.5, and coding pass rate, 14.0. Online DPO reaches 16.5 percent
+    accuracy in math, compared with 12.5 for Proactive Base. That is four percentage points,
+    or 32 percent relative improvement. Absolute math accuracy is still low. The paper gives
+    no confidence intervals here, so I treat these as reported score differences rather than
+    proof that every gap is statistically reliable.
+  </aside>
+</section>
+
+<section id="results-3">
+  <h2>Online DPO uses fewer tokens and is more interactive</h2>
+  <div class="cols">
+    <div class="chart">
+      <canvas data-chart='{"type":"bar","labels":["Doc","Code","Math"],"axis":"Tokens per conversation (k) ↓","min":0,"max":3.5,"decimals":2,"series":[{"name":"Proactive Base","role":"base","data":[2.18,1.51,2.90]},{"name":"Online DPO","role":"ours","data":[2.00,1.31,2.37]}]}'></canvas>
+    </div>
+    <div class="chart">
+      <canvas data-chart='{"type":"bar","labels":["Doc","Code","Math"],"axis":"Interactivity (ITR, 0–1) ↑","min":0,"max":1,"decimals":3,"series":[{"name":"Proactive Base","role":"base","data":[0.62,0.337,0.46]},{"name":"Online DPO","role":"ours","data":[0.92,0.52,0.60]}]}'></canvas>
+    </div>
+  </div>
+  <p class="source">Table 1, p. 6; ITR divided by 100</p>
+  <aside class="notes">
+    Now I compare Online DPO with Proactive Base on the other two objectives. On the left,
+    lower bars mean less assistant text for users to read. Tokens fall on every task. In
+    math, for example, the conversation drops from 2.90 to 2.37 thousand tokens. This measures
+    reading load, not training cost or response latency. On the right, higher bars mean more
+    interactivity according to the Claude-3.5-Sonnet judge. Writing rises from 0.62 to 0.92,
+    coding from 0.337 to 0.52, and math from 0.46 to 0.60. I show the task-level scores because
+    the headline percentage depends on the judge's rescaling. Yash will explain that limitation
+    in his analysis.
+  </aside>
+</section>
+
+<section id="results-4">
+  <h2>Real users give higher ratings and spend less time</h2>
+  <p class="lead">201 participants &middot; anonymous assistants</p>
+  <figure>
+    <!-- Original assets/figures/fig7.png (4471x1179), crop (0,0)-(3355,1179).
+         Panels (a)-(c) retained. Caption supplies the model order from panel (d)'s legend. -->
+    <img src="assets/figures/results-fig7-abc.png" alt="Original Figure 7 panels a to c: document quality 8.16, 8.38, 8.50; interaction rating 8.11, 8.46, 8.60; time 1237, 1319, 1108 seconds for Base, Proactive Base and CollabLLM respectively">
+    <figcaption>Base, Proactive Base, CollabLLM from left to right &middot; Time: &minus;10.4% vs Base</figcaption>
+  </figure>
+  <p class="source">Fig. 7(a&ndash;c), p. 8; Sec. 6, p. 7&ndash;8</p>
+  <aside class="notes">
+    Do these gains also appear with real people? The authors recruited 201 participants for
+    writing tasks. Each person used an anonymous assistant for at least eight turns and
+    rated the resulting document and the interaction on a one-to-ten scale. Within each
+    panel, the order is Base, Proactive Base, then CollabLLM. Document quality rises from
+    8.16 to 8.50, and interaction quality from 8.11 to 8.60. These are modest gains in the
+    average ratings. The third panel shows time: 1,237 seconds with Base versus 1,108 with
+    CollabLLM, a 10.4 percent reduction. These results support usefulness on this writing
+    task, but do not establish the same benefit for coding or math with real users.
+  </aside>
+</section>
+
+<section id="results-5">
+  <h2>Clarification transfers to QA, with more unnecessary questions</h2>
+  <div class="chart short">
+    <canvas data-chart='{"type":"bar","labels":["Ambiguous: asks","Clear: answers"],"axis":"Correct action (%) ↑","min":0,"max":100,"decimals":2,"unit":"%","series":[{"name":"GPT-4o","role":"base2","data":[15.44,95.60]},{"name":"Base","role":"base","data":[16.26,90.40]},{"name":"CollabLLM","role":"ours","data":[52.84,72.32]}]}'></canvas>
+    <span class="fragment" data-show-series="2"></span>
+  </div>
+  <p class="turns-note">Coding-trained model &middot; zero-shot Abg-CoQA</p>
+  <p class="source">Table 2, p. 7</p>
+  <aside class="notes">
+    The authors also test transfer. They take the Online DPO model trained on coding and
+    evaluate it on Abg-CoQA without further training. Here, success means choosing the right
+    action: ask for clarification when a question is ambiguous, or answer directly when it
+    is clear. Click: CollabLLM asks on 52.84 percent of ambiguous questions, compared with 16.26
+    for Base. But the second group shows the trade-off. It answers clear questions directly
+    only 72.32 percent of the time, below Base's 90.40. Macro accuracy improves to 62.58
+    percent, although macro F1 stays below GPT-4o. So the behaviour transfers, but the model
+    still needs to learn when a question is actually useful.
+  </aside>
+</section>
+
+<section id="results-6" class="band">
+  <h2>Both models pass 99.7% of safety checks</h2>
+  <p class="lead">80 adversarial queries &middot; four evaluators per response</p>
+  <figure>
+    <!-- sources/paper.pdf, p. 17, PDF-point crop (165,63)-(432,120), rendered at 288 dpi.
+         Complete original Table 8, without its prose caption. -->
+    <img src="assets/figures/results-table8.png" alt="Original Table 8. Mean harm scores on a 0 to 7 scale: Base 0.88 violence, 0.96 sexual, 0.89 self-harm, 1.01 hate; CollabLLM 0.95, 0.94, 1.00, 0.99">
+    <figcaption>No detected safety degradation in this limited test</figcaption>
+  </figure>
+  <p class="source">Appendix C, p. 16&ndash;17; Table 8, p. 17</p>
+  <aside class="notes">
+    Finally, could stronger collaboration help a user with harmful intentions? The authors
+    start from a safety-aligned base model and check whether collaborative fine-tuning
+    weakens that alignment. They test 80 adversarial queries, 20 from each harm category,
+    using the Azure AI Evaluation SDK. Every response receives four harm evaluations.
+    Both models pass 319 of the 320 checks, which rounds to 99.7 percent. The table shows
+    small differences in both directions, with average harm scores around one on a
+    zero-to-seven scale. This limited test detects no safety degradation. It does not prove
+    robustness to adaptive attacks over several turns. Yash will now examine the wider
+    limitations and our own experiments.
+  </aside>
 </section>
