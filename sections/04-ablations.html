@@ -20,17 +20,17 @@
 </section>
 
 <section id="ablations-2">
-  <h2>+46.3% interactivity is +0.07 to +0.15 points on the judge's own 1&ndash;3 scale</h2>
+  <h2>+46.3% interactivity is +0.07 to +0.15 points on the judge's real 1&ndash;3 scale</h2>
   <div class="cols">
     <div class="chart">
-      <canvas data-chart='{"type":"bar","horizontal":true,"labels":["Doc","Code","Math"],"axis":"ITR as reported (0–1) ↑","min":0,"max":1,"decimals":2,
+      <canvas data-chart='{"type":"bar","horizontal":true,"labels":["Doc","Code","Math"],"axis":"Interactivity (ITR, 0–1) ↑","min":0,"max":1,"decimals":3,
         "series":[{"name":"Proactive Base","role":"base","data":[0.62,0.337,0.46]},
-                  {"name":"CollabLLM","role":"ours","data":[0.92,0.52,0.60]}]}'></canvas>
+                  {"name":"Online DPO","role":"ours","data":[0.92,0.52,0.60]}]}'></canvas>
     </div>
     <div class="chart fragment">
-      <canvas data-chart='{"type":"bar","horizontal":true,"labels":["Doc","Code","Math"],"axis":"Judge score (1–3) ↑","min":1,"max":3,"decimals":2,
+      <canvas data-chart='{"type":"bar","horizontal":true,"labels":["Doc","Code","Math"],"axis":"Judge&#39;s real scale (1–3) ↑","min":1,"max":3,"decimals":2,
         "series":[{"name":"Proactive Base","role":"base","data":[2.81,2.67,2.73]},
-                  {"name":"CollabLLM","role":"ours","data":[2.96,2.76,2.80]}]}'></canvas>
+                  {"name":"Online DPO","role":"ours","data":[2.96,2.76,2.80]}]}'></canvas>
     </div>
   </div>
   <ul>
@@ -41,7 +41,7 @@
     Two headline numbers deserve a closer look. The judge scores interactivity from 1 to 3, and
     since every method scores above 2.5, Appendix D.4 applies a rescaling that maps 2.5 to 0 and
     3 to 1. Left:
-    the scores as reported. Click: the same scores on the judge's own scale. CollabLLM gains 0.15,
+    the scores as reported. Click: the same scores on the judge's own scale. Online DPO gains 0.15,
     0.09 and 0.07 points over Proactive Base. The authors' IJCAI-26 version also corrects the
     headline from 46.3 to 44.3%. Click: "+17.6% satisfaction" matches the gap in "very good"
     ratings, 56.9 versus 39.3%, in percentage points. The mean rating rose 4.2%.
