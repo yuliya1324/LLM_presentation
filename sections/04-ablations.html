@@ -6,7 +6,7 @@
     <tr class="fragment"><td>Asks on 27.7% of clear questions</td><td>PPP</td><td>Reward counts the user's effort</td></tr>
     <tr class="fragment"><td>Tested on its own simulator</td><td>Lost in Conversation</td><td>Another team's:<br>15 LLMs lose 39%</td></tr>
   </table>
-  <p class="source">App. F.2, p. 24; Table 2, p. 7 &middot; UserLM-8b (Naous et al., 2025) &middot; PPP (Sun et al., 2025) &middot; Lost in Conversation (Laban et al., 2026)</p>
+  <p class="source">App. F.2, p. 24; Table 2, p. 7 &middot; UserLM-8b (Naous et al., 2025) &middot; PPP (Sun et al., 2025) &middot; LLMs Get Lost in Multi-Turn Conversation (Laban et al., ICLR 2026)</p>
   <aside class="notes">
     Thanks, Elgun. Those results leave open questions, and later papers already target three of
     them. Click: simulated users are easier than real ones, which the authors acknowledge in
@@ -48,37 +48,6 @@
   </aside>
 </section>
 
-<section id="ablations-3">
-  <h2>Three gaps in the evaluation shaped our test</h2>
-  <div class="cards">
-    <div class="card fragment fade-up">
-      <span class="icon">1</span>
-      <h3>Only CollabLLM gets the prompt</h3>
-      <p><strong>We test the prompt and the trained adapter separately.</strong></p>
-    </div>
-    <div class="card fragment fade-up">
-      <span class="icon">2</span>
-      <h3>No error bars</h3>
-      <p>Math: 12.5% &rarr; 16.5%. <strong>We report 95% CIs.</strong></p>
-    </div>
-    <div class="card fragment fade-up">
-      <span class="icon">3</span>
-      <h3>Own simulator and tasks</h3>
-      <p><strong>We use another team's benchmark.</strong></p>
-    </div>
-  </div>
-  <p class="source">Eval script: scripts/engine/inference.py, github.com/Wuyxin/collabllm; Table 1, p. 6; Sec. 4, p. 4&ndash;5</p>
-  <aside class="notes">
-    These gaps shaped our test. Click: the released evaluation script gives CollabLLM its
-    proactive system prompt but not the base model. So we test the prompt and the LoRA adapter
-    apart. The adapter is the small set of weights CollabLLM trains on Llama, as in method-7.
-    Click: there are no error bars. Math accuracy rises from 12.5 to 16.5% on 200 problems, and a
-    95% interval on that difference is about plus or minus 7 points. We report 95% confidence
-    intervals. Click: it is tested on its own simulator and tasks, so we use another team's
-    benchmark.
-  </aside>
-</section>
-
 <section id="ablations-4">
   <h2>Given a problem in pieces, Llama-3.1-8B drops from 77% to 43% correct</h2>
   <div class="versus">
@@ -102,13 +71,15 @@
   </div>
   <p class="source">Our runs: Lost in Conversation, 103 GSM8K problems (example: sharded-GSM8K/117)</p>
   <aside class="notes">
-    Here is that benchmark, Lost in Conversation, on one real problem. Left: the whole problem in
+    Rather than argue from the paper's own numbers, we tested it ourselves, on that other team's
+    benchmark, Lost in Conversation. Here it is on one real problem. Left: the whole problem in
     one turn. Right: the same problem split into pieces, which the benchmark calls shards. A
     simulated user, GPT-4o-mini told to be lazy and brief, reveals one piece per turn and answers
     anything else with "I don't know". Click through the pieces: any answer before the last one
     has to guess the numbers. Click: over 103 problems, Llama-3.1-8B falls from 76.7 to 42.9%
-    correct. A pilot at the paper's sampling settings matches the benchmark's published numbers;
-    it is in the backup.
+    correct. The brackets are 95% confidence intervals, which the paper never reports: how far
+    each number could move just from which problems were tested. A pilot at the paper's sampling
+    settings matches the benchmark's published numbers; it is in the backup.
   </aside>
 </section>
 
@@ -130,8 +101,11 @@
   </ul>
   <p class="source">Our runs: Lost in Conversation, 103 GSM8K problems</p>
   <aside class="notes">
-    Now all four assistants. The design is 2 by 2: CollabLLM's LoRA adapter on or off, crossed
-    with its system prompt on or off. Base first: 76.7 whole, 42.9 split. Click: CollabLLM, the
+    Now all four assistants. The design is 2 by 2: CollabLLM's LoRA adapter, the small set of
+    weights it trains on Llama, on or off, crossed with its system prompt on or off. The paper's
+    own evaluation gives only CollabLLM its prompt, which is why we test the two separately. We
+    also checked that the adapter is active: it favours CollabLLM's chosen replies in 72% of
+    pairs (backup). Base first: 76.7 whole, 42.9 split. Click: CollabLLM, the
     adapter alone, drops just as much, 32 points. Click: Base with the prompt drops 30. Click:
     CollabLLM with the prompt drops 27, the least. Click: compared with Base, CollabLLM's drop is
     1.5 points smaller, interval minus 5.4 to 8.3. CollabLLM plus prompt's is 7.0 smaller,
@@ -162,55 +136,16 @@
   </aside>
 </section>
 
-<section id="ablations-7">
-  <h2>The adapter learned CollabLLM's preferences but barely changes behaviour</h2>
-  <div class="stats">
-    <div class="stat"><span class="num count">0.06%</span><span class="label">median change to each weight matrix</span></div>
-    <div class="stat fragment"><span class="num count">72%</span><span class="label">of 300 pairs from CollabLLM's released data: the adapter favours the chosen reply more than Base does</span></div>
-    <div class="stat fragment"><span class="num count">+0.7</span><span class="label">points more turns that ask with the adapter (7.3% &rarr; 8.0%)</span></div>
-  </div>
-  <p class="source">Our analysis of CollabLLM's released math adapter and training data; Our runs: Lost in Conversation, 103 GSM8K problems</p>
-  <aside class="notes">
-    So why doesn't the adapter matter? First, it is tiny: the median weight matrix changes by
-    0.06%. Its learning rates, 1e-5 and 5e-6, suit full fine-tuning, while LoRA usually trains
-    around 1e-4. Click: yet it learned. On 300 pairs from CollabLLM's released data, its DPO
-    margin, how much more it favours the chosen reply than Base does, is above zero for 72%: mean
-    plus 3.71 nats, interval 3.05 to 4.38. We can't confirm these were its exact training pairs.
-    Click: but in Lost in Conversation it adds only 0.7 points of turns that ask, from 7.3 to
-    8.0%, and premature answers move by 1.4 points.
-  </aside>
-</section>
-
-<section id="ablations-8">
-  <h2>60% of training pairs are decided by style alone, and their labels are the noisiest</h2>
-  <div class="stats">
-    <div class="stat"><span class="num count">60%</span><span class="label">of pairs have two equally correct replies, so style and length decide (40% differ in correctness)</span></div>
-    <div class="stat fragment"><span class="num count">18%</span><span class="label">chance that rerunning the 3 simulations flips such a label (12% when correctness differs)</span></div>
-    <div class="stat fragment"><span class="num count">46%</span><span class="label">of such pairs differ by less than one standard error (32% when correctness differs)</span></div>
-  </div>
-  <p class="source">Our analysis of CollabLLM's released training data</p>
-  <aside class="notes">
-    Last, the training signal itself. As on method-3, each reply's score averages 3 simulated
-    sessions, and method-5's pairs keep the higher score as chosen. In CollabLLM's math data, 60%
-    of the 2,527 pairs are equally correct, so style and length alone decide; 40% differ in
-    correctness. Click: the style-only pairs have small gaps, so rerunning the 3 sessions would
-    flip about 18% of their labels, against 12%. Click: 46% have a gap within one standard error,
-    the noise level of a 3-session average, against 32%. The signal meant to teach collaboration
-    is the least reliable. These are normal-approximation sizes, not exact rates.
-  </aside>
-</section>
-
 <section id="ablations-9" class="statement band">
   <h2>In our test, CollabLLM's collaboration came from its prompt, not its training</h2>
-  <p class="lead">Its training labels are noisiest exactly where they teach collaboration.</p>
   <p class="lead">Next: Found in Conversation (2026, CollabLLM's first author) keeps &ge;92% of single-turn performance with self-distillation.</p>
   <p class="source">Found in Conversation (Chen, Wu and Leskovec, 2026)</p>
   <aside class="notes">
-    To sum up. In our test, when a math problem arrives in pieces, CollabLLM gets as lost as its
-    base model. The collaboration we did see, asking first and answering right more often, came
-    from its system prompt rather than its trained adapter. And the labels meant to teach
-    collaboration are the noisiest. Next, Found in Conversation, by CollabLLM's first author,
-    keeps at least 92% of single-turn performance with self-distillation: a teacher sees the
-    whole task, a student sees it in pieces. Iuliia will now show how we built these slides.
+    To sum up. When a math problem arrives in pieces, every assistant still drops 27 to 34
+    points. CollabLLM's training alone makes no clear difference; the asking we saw came from its
+    prompt. One caveat: this is one task, one model and 103 problems. Next, Found in Conversation,
+    by CollabLLM's first author, keeps at least 92% of single-turn performance with
+    self-distillation: a teacher sees the whole task, a student sees it in pieces. Iuliia will now
+    show how we built these slides.
   </aside>
 </section>

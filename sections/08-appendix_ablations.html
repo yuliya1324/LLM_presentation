@@ -25,7 +25,7 @@
     <tr><td>Our pilot, top_p 1.0</td><td>68.0 [59.2, 76.7]</td><td>39.8 [31.1, 49.5]</td></tr>
   </table>
   <p>We used top_p 0.9: at 1.0, 5.8% of whole and 9.3% of split replies hit the 1,000-token cap.</p>
-  <p class="source">Lost in Conversation (Laban et al., 2026), Table 1, Math &middot; Our runs: Lost in Conversation, 103 GSM8K problems</p>
+  <p class="source">LLMs Get Lost in Multi-Turn Conversation (Laban et al., ICLR 2026), Table 1, Math &middot; Our runs: Lost in Conversation, 103 GSM8K problems</p>
   <aside class="notes">
     Yes, it matches. At the paper's sampling, top_p 1.0, a pilot with one run per problem gives
     Llama-3.1-8B 68.0% whole and 39.8% split; the paper's 63.9 and 37.4 fall inside both
@@ -128,27 +128,6 @@
   </aside>
 </section>
 
-<section id="appendix_ablations-7">
-  <h2>All three released CollabLLM adapters are equally small</h2>
-  <table>
-    <tr><th>Adapter</th><th>Matrices</th><th>Median change</th><th>Max change</th><th>Largest change in</th></tr>
-    <tr><td>Math</td><td>224</td><td>0.0584%</td><td>0.0948%</td><td>layer 2, v_proj</td></tr>
-    <tr><td>Code</td><td>224</td><td>0.0526%</td><td>0.0959%</td><td>layer 0, v_proj</td></tr>
-    <tr><td>Writing</td><td>224</td><td>0.0635%</td><td>0.1003%</td><td>layer 0, v_proj</td></tr>
-  </table>
-  <ul>
-    <li>The math adapter's margin comes mostly from rejected replies (&minus;3.52 vs +0.19 for chosen), so it mostly learned what to avoid</li>
-  </ul>
-  <p class="source">Our analysis of CollabLLM's released adapters and training data</p>
-  <aside class="notes">
-    No, the math adapter is not unusual. All three released adapters, math, code and writing,
-    change the median weight matrix by 0.05 to 0.06% and none by more than about 0.1%, over the
-    same 224 matrices; the largest changes sit in early value projections. On the math pairs, the
-    adapter mostly lowered the rejected replies, a log-ratio of minus 3.52 against plus 0.19 for
-    the chosen ones, so it learned mainly what to avoid.
-  </aside>
-</section>
-
 <section id="appendix_ablations-8">
   <h2>Label noise in detail</h2>
   <table>
@@ -215,5 +194,25 @@
     5e-6 for DPO, are typical of full fine-tuning, while LoRA usually trains near 1e-4, which may
     explain the tiny adapter. And the authors themselves corrected the interactivity headline to
     44.3% in their IJCAI-26 abstract.
+  </aside>
+</section>
+
+<section id="appendix_ablations-11">
+  <h2>The adapter learned CollabLLM's preferences but barely changes behaviour</h2>
+  <div class="stats">
+    <div class="stat"><span class="num count">0.06%</span><span class="label">median change to each weight matrix</span></div>
+    <div class="stat"><span class="num count">72%</span><span class="label">of 300 pairs from CollabLLM's released data: the adapter favours the chosen reply more than Base does</span></div>
+    <div class="stat"><span class="num count">+0.7</span><span class="label">points more turns that ask with the adapter (7.3% &rarr; 8.0%)</span></div>
+  </div>
+  <p class="source">Our analysis of CollabLLM's released math adapter and training data; Our runs: Lost in Conversation, 103 GSM8K problems</p>
+  <aside class="notes">
+    It learned, but it is tiny. The median weight matrix changes by 0.06%, and all three released
+    adapters, math, code and writing, change it by only 0.05 to 0.06%. Their learning rates, 1e-5
+    and 5e-6, suit full fine-tuning rather than LoRA's usual 1e-4. On 300 pairs from CollabLLM's
+    released data, it favours the chosen reply more than Base does in 72%, a mean DPO margin of
+    3.71 nats, interval 3.05 to 4.38; we can't confirm these were its training pairs. That margin
+    comes mostly from lowering rejected replies, minus 3.52, rather than raising chosen ones, plus
+    0.19, so it mostly learned what to avoid. Yet it adds only 0.7 points of asking turns, and
+    premature answers move by 1.4 points.
   </aside>
 </section>
