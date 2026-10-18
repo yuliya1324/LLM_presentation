@@ -150,6 +150,8 @@
 .reveal .chart { position: relative; height: 470px; }
 .reveal .chart.short { height: 380px; }
 .reveal .cols .chart { height: 440px; }
+/* Chart.js measures the scaled slide; let chart columns shrink back in windows above 1280x720 */
+.reveal .cols > .chart { min-width: 0; }
 
 /* Headline numbers; .count animates from 0 */
 .reveal .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-top: 120px; }
