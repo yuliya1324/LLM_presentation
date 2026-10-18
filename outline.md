@@ -16,6 +16,7 @@ Talk: 20 min, about 22 slides
 | sections/07-appendix_results.html | Elgun | 1 | Paper reward ablation and forward-window trade-off (Q&A) |
 | sections/08-appendix_ablations.html | Yash | 11 | Backup for our tests |
 | sections/09-appendix_harness.html | Iuliia | 2 | Appendix for harness |
+| sections/10-contribution.html | Iuliia | 1 | Each team member contribution |
 
 ## Slide plan
 
@@ -91,3 +92,6 @@ Backup slides for questions, not presented. Same rules as 04.
 ### 09-appendix_harness (Iuliia)
 - appendix_harness-1: Schema of folder structure
 - appendix_harness-2: Example of a skill, e.g. ingest
+
+### 10-contribution (Iuliia)
+- contribution-1: List contribution of each member. Iuliia: slides for motivation and methods; harness setup for the presentation and corresponding slides. Yash: analysis of the paper's results and ablation experiments (ideas and implimentation) and corresponding slides. Elgun: slides for paper's results.
